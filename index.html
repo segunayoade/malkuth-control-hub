@@ -4,11 +4,10 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v2.5</title>
+<title>Malkuth Control Hub v2.6</title>
 
 <style>
 *{box-sizing:border-box}
-
 body{
   margin:0;
   background:#0b0d12;
@@ -16,7 +15,6 @@ body{
   font-family:Arial,sans-serif;
   padding:24px
 }
-
 main{
   max-width:460px;
   margin:auto;
@@ -25,19 +23,8 @@ main{
   border-radius:24px;
   padding:24px
 }
-
-h1{
-  text-align:center;
-  margin:0 0 8px;
-  font-size:30px
-}
-
-.sub{
-  text-align:center;
-  color:#a9b0bd;
-  margin:0 0 20px
-}
-
+h1{text-align:center;margin:0 0 8px;font-size:30px}
+.sub{text-align:center;color:#a9b0bd;margin:0 0 20px}
 .status{
   display:flex;
   justify-content:space-between;
@@ -49,12 +36,7 @@ h1{
   color:#a9b0bd;
   font-size:13px
 }
-
-.ok{
-  color:#8dd7a8;
-  font-weight:700
-}
-
+.ok{color:#8dd7a8;font-weight:700}
 .card,a,.locked,button{
   display:block;
   width:100%;
@@ -68,11 +50,7 @@ h1{
   font-weight:700;
   text-align:left
 }
-
-.primary{
-  border-color:#806b35
-}
-
+.primary,.gold{border-color:#806b35}
 a small,.locked small,.card small{
   display:block;
   margin-top:6px;
@@ -80,12 +58,7 @@ a small,.locked small,.card small{
   font-weight:400;
   line-height:1.35
 }
-
-.locked{
-  opacity:.55;
-  border-style:dashed
-}
-
+.locked{opacity:.55;border-style:dashed}
 .console{
   border:1px solid #806b35;
   border-radius:18px;
@@ -93,14 +66,12 @@ a small,.locked small,.card small{
   margin:12px 0;
   background:#111622
 }
-
 label{
   display:block;
   margin:18px 0 8px;
   color:#d9b65d;
   font-weight:700
 }
-
 textarea{
   width:100%;
   background:#0b0d12;
@@ -111,33 +82,10 @@ textarea{
   font:14px/1.4 monospace;
   resize:vertical
 }
-
-#request{
-  min-height:110px
-}
-
-#prepared{
-  min-height:260px
-}
-
-#evidence{
-  min-height:150px
-}
-
-#verification{
-  min-height:260px
-}
-
-button{
-  cursor:pointer;
-  text-align:center
-}
-
-.gold{
-  border-color:#806b35;
-  background:#211f22
-}
-
+#request{min-height:110px}
+#prepared,#verification,#recovery{min-height:260px}
+#evidence,#verdict{min-height:150px}
+button{cursor:pointer;text-align:center}
 .state{
   padding:14px;
   margin:16px 0;
@@ -147,17 +95,8 @@ button{
   text-align:center;
   font-weight:700
 }
-
-.state span{
-  color:#d9b65d
-}
-
-.note{
-  font-size:12px;
-  color:#a9b0bd;
-  line-height:1.4
-}
-
+.state span{color:#d9b65d}
+.note{font-size:12px;color:#a9b0bd;line-height:1.4}
 .rule{
   margin-top:22px;
   padding-top:18px;
@@ -167,25 +106,14 @@ button{
   line-height:1.5;
   font-size:13px
 }
-
-.rule b{
-  color:#d9b65d
-}
-
-.footer{
-  text-align:center;
-  margin-top:12px;
-  color:#8f98a8;
-  font-size:12px
-}
+.rule b{color:#d9b65d}
+.footer{text-align:center;margin-top:12px;color:#8f98a8;font-size:12px}
 </style>
 
 <script>
-
 const protocol = `Malkuth Control Hub command session.
 
 Interpret my request and return:
-
 1. INTENT — what I am asking to achieve.
 2. CONSTRAINTS — safety, permissions, cost, scope, or technical limits.
 3. PROPOSED ACTION — the smallest effective next action.
@@ -194,110 +122,58 @@ Interpret my request and return:
 
 Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
 
-let currentState = "READY";
+let currentState="READY";
 
 function setState(state){
-  currentState = state;
-  document.getElementById("stateText").textContent = state;
+  currentState=state;
+  document.getElementById("stateText").textContent=state;
+}
+
+async function copyText(text){
+  try{
+    await navigator.clipboard.writeText(text);
+    return true;
+  }catch(e){
+    return false;
+  }
 }
 
 function prepareCommand(){
-
-  const request =
-    document.getElementById("request").value.trim();
-
-  const out =
-    document.getElementById("prepared");
-
+  const request=document.getElementById("request").value.trim();
   if(!request){
     alert("Type your command first.");
     return false;
   }
-
-  out.value =
-    protocol +
-    "\n\nMY REQUEST:\n" +
-    request;
-
+  document.getElementById("prepared").value=
+    protocol+"\n\nMY REQUEST:\n"+request;
   setState("PREPARED");
-
-  out.scrollIntoView({
-    behavior:"smooth",
-    block:"center"
-  });
-
   return true;
 }
 
-async function copyText(text){
-
-  try{
-    await navigator.clipboard.writeText(text);
-    return true;
-  }
-  catch(e){
-    return false;
-  }
-}
-
-async function copyPrepared(){
-
-  const out =
-    document.getElementById("prepared");
-
-  if(!out.value.trim()){
+async function handoff(){
+  if(!document.getElementById("prepared").value.trim()){
     if(!prepareCommand()) return;
   }
-
-  const copied =
-    await copyText(out.value);
-
-  if(copied){
-    alert("Prepared command copied.");
-  }
-  else{
-    out.focus();
-    out.select();
-    alert("Copy the highlighted command.");
-  }
-}
-
-async function handoff(){
-
-  if(!prepareCommand()) return;
-
-  const out =
-    document.getElementById("prepared");
-
-  await copyText(out.value);
-
+  const text=document.getElementById("prepared").value;
+  await copyText(text);
   setState("HANDED OFF");
-
-  window.open(
-    "https://chatgpt.com/",
-    "_blank"
-  );
+  window.open("https://chatgpt.com/","_blank");
 }
 
 function prepareVerification(){
-
-  const command =
-    document.getElementById("prepared").value.trim();
-
-  const evidence =
-    document.getElementById("evidence").value.trim();
+  const command=document.getElementById("prepared").value.trim();
+  const evidence=document.getElementById("evidence").value.trim();
 
   if(!command){
     alert("Prepare a command first.");
     return false;
   }
-
   if(!evidence){
     alert("Paste the result or evidence first.");
     return false;
   }
 
-  const verification =
+  document.getElementById("verification").value=
 `Malkuth Verification Session.
 
 ORIGINAL COMMAND:
@@ -311,361 +187,199 @@ ${evidence}
 Evaluate the evidence and return:
 
 1. CLAIM — what result is being claimed.
-
 2. EVIDENCE — what observable evidence supports it.
-
 3. CONSISTENCY — whether the evidence actually matches the original command.
-
-4. LIMITATIONS — anything that remains uncertain, incomplete, or unverified.
-
+4. LIMITATIONS — anything uncertain, incomplete, or unverified.
 5. VERDICT — VERIFIED, PARTIALLY VERIFIED, FAILED, or INSUFFICIENT EVIDENCE.
 
-Do not mark the action VERIFIED merely because a system or AI claims success. Base the verdict on the supplied evidence.
+Do not mark the action VERIFIED merely because a system or AI claims success. Base the verdict on supplied evidence.
 
-Rule:
-AI proposes.
-Rules constrain.
-I authorise.
-External systems execute.
-Malkuth verifies.`;
-
-  document.getElementById("verification").value =
-    verification;
+Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
 
   setState("AWAITING VERIFICATION");
-
-  document.getElementById("verification")
-    .scrollIntoView({
-      behavior:"smooth",
-      block:"center"
-    });
-
   return true;
 }
 
 async function verifyWithChatGPT(){
-
-  if(!prepareVerification()) return;
-
-  const verification =
-    document.getElementById("verification");
-
-  await copyText(verification.value);
-
+  if(!document.getElementById("verification").value.trim()){
+    if(!prepareVerification()) return;
+  }
+  await copyText(document.getElementById("verification").value);
   setState("VERIFICATION HANDED OFF");
-
-  window.open(
-    "https://chatgpt.com/",
-    "_blank"
-  );
+  window.open("https://chatgpt.com/","_blank");
 }
 
-function markVerified(){
+function prepareRecovery(){
+  const original=document.getElementById("prepared").value.trim();
+  const verdict=document.getElementById("verdict").value.trim();
 
-  const evidence =
-    document.getElementById("evidence").value.trim();
-
-  if(!evidence){
-    alert("Evidence is required before verification.");
-    return;
+  if(!original){
+    alert("Prepare the original command first.");
+    return false;
+  }
+  if(!verdict){
+    alert("Paste the verification verdict first.");
+    return false;
   }
 
-  setState("VERIFIED");
+  document.getElementById("recovery").value=
+`Malkuth Recovery Session.
+
+ORIGINAL COMMAND:
+
+${original}
+
+VERIFICATION RESULT:
+
+${verdict}
+
+Create a recovery action that resolves only the missing or failed verification points.
+
+Return:
+
+1. GAP — list the exact facts/evidence still missing.
+2. RECOVERY ACTION — the smallest targeted research/action needed to close those gaps.
+3. AUTHORISATION — state whether the recovery action is non-consequential or requires my explicit approval before execution.
+4. REQUIRED EVIDENCE — specify exactly what evidence would be sufficient on the next verification pass.
+5. STOP CONDITION — state what would count as VERIFIED, and when to stop rather than continue looping.
+
+Do not repeat work that has already been adequately verified.
+Do not broaden the scope beyond the original command unless I explicitly authorise it.
+
+Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
+
+  setState("RECOVERY PREPARED");
+  return true;
 }
 
-function markFailed(){
-  setState("FAILED");
+async function recoveryHandoff(){
+  if(!document.getElementById("recovery").value.trim()){
+    if(!prepareRecovery()) return;
+  }
+  await copyText(document.getElementById("recovery").value);
+  setState("RECOVERY HANDED OFF");
+  window.open("https://chatgpt.com/","_blank");
 }
 
-function clearConsole(){
+function markVerified(){ setState("VERIFIED"); }
+function markFailed(){ setState("FAILED"); }
 
-  document.getElementById("request").value="";
-  document.getElementById("prepared").value="";
-  document.getElementById("evidence").value="";
-  document.getElementById("verification").value="";
-
+function clearSession(){
+  ["request","prepared","evidence","verification","verdict","recovery"]
+    .forEach(id=>document.getElementById(id).value="");
   setState("READY");
 }
 
 function systemStatus(){
-
   alert(
-    "Malkuth Control Hub v2.5\n\n" +
-    "NFC trigger: active\n" +
-    "Hub: online\n" +
-    "Command console: active\n" +
-    "ChatGPT handoff: active\n" +
-    "Verification loop: active\n" +
-    "Shopping: active\n" +
-    "Visor workspace: basic\n" +
-    "Notes: active\n" +
-    "Payments: locked\n\n" +
-    "Current state: " +
-    currentState
+    "Malkuth Control Hub v2.6\n\n"+
+    "NFC trigger: active\n"+
+    "Hub: online\n"+
+    "Command console: active\n"+
+    "Verification loop: active\n"+
+    "Recovery loop: active\n"+
+    "Payments: locked\n\n"+
+    "Current state: "+currentState
   );
 }
-
 </script>
 </head>
 
 <body>
-
 <main>
 
 <h1>Malkuth Control Hub</h1>
-
-<p class="sub">
-Phase 2.5 • Verification Loop
-</p>
+<p class="sub">Phase 2.6 • Recovery Loop</p>
 
 <div class="status">
-
-<span>System</span>
-
-<span class="ok">
-ONLINE
-</span>
-
-<span>
-Payments: LOCKED
-</span>
-
+  <span>System</span>
+  <span class="ok">ONLINE</span>
+  <span>Payments: LOCKED</span>
 </div>
-
 
 <div class="console">
 
 <div class="card primary">
-
-COMMAND CONSOLE
-
-<small>
-Intent → Command → Handoff → Evidence → Verification
-</small>
-
+COMMAND + VERIFY + RECOVER
+<small>Intent → Handoff → Evidence → Verification → Recovery → Re-verify</small>
 </div>
-
 
 <div class="state">
-
-STATE:
-<span id="stateText">
-READY
-</span>
-
+STATE: <span id="stateText">READY</span>
 </div>
 
+<label for="request">YOUR COMMAND</label>
+<textarea id="request" placeholder="Example: Find the cheapest brand-new XREAL One Pro in the UK."></textarea>
 
-<label for="request">
-YOUR COMMAND
-</label>
+<button onclick="prepareCommand()">PREPARE COMMAND</button>
 
-<textarea
-id="request"
-placeholder="Example: Find the best current UK price for XREAL One Pro, brand new only."
-></textarea>
+<label for="prepared">PREPARED COMMAND</label>
+<textarea id="prepared" readonly placeholder="Your structured command will appear here."></textarea>
 
+<button class="gold" onclick="handoff()">HAND OFF TO CHATGPT</button>
 
-<button onclick="prepareCommand()">
-PREPARE COMMAND
-</button>
+<label for="evidence">RESULT / EVIDENCE</label>
+<textarea id="evidence" placeholder="Paste the returned result or supporting evidence here."></textarea>
 
+<button onclick="prepareVerification()">PREPARE VERIFICATION</button>
 
-<label for="prepared">
-PREPARED COMMAND
-</label>
+<label for="verification">VERIFICATION REQUEST</label>
+<textarea id="verification" readonly placeholder="Verification request appears here."></textarea>
 
-<textarea
-id="prepared"
-readonly
-placeholder="Your structured command will appear here."
-></textarea>
+<button class="gold" onclick="verifyWithChatGPT()">VERIFY WITH CHATGPT</button>
 
+<label for="verdict">VERIFICATION VERDICT</label>
+<textarea id="verdict" placeholder="Paste ChatGPT's verification verdict here, including limitations/gaps."></textarea>
 
-<button
-class="gold"
-onclick="handoff()">
+<button onclick="prepareRecovery()">PREPARE RECOVERY</button>
 
-HAND OFF TO CHATGPT
+<label for="recovery">RECOVERY REQUEST</label>
+<textarea id="recovery" readonly placeholder="Targeted recovery command appears here."></textarea>
 
-</button>
+<button class="gold" onclick="recoveryHandoff()">HAND OFF RECOVERY TO CHATGPT</button>
 
-
-<button onclick="copyPrepared()">
-
-COPY PREPARED COMMAND
-
-</button>
-
-
-<a
-href="https://chatgpt.com/"
-target="_blank"
-rel="noopener">
-
-OPEN CHATGPT
-
-<small>
-Fallback if automatic handoff is blocked.
-</small>
-
-</a>
-
-
-<label for="evidence">
-RESULT / EVIDENCE
-</label>
-
-<textarea
-id="evidence"
-placeholder="Paste the returned result, confirmation, receipt, status, reference number or other evidence here."
-></textarea>
-
-
-<button onclick="prepareVerification()">
-
-PREPARE VERIFICATION
-
-</button>
-
-
-<label for="verification">
-VERIFICATION REQUEST
-</label>
-
-<textarea
-id="verification"
-readonly
-placeholder="The verification request will appear here."
-></textarea>
-
-
-<button
-class="gold"
-onclick="verifyWithChatGPT()">
-
-VERIFY WITH CHATGPT
-
-</button>
-
-
-<button onclick="markVerified()">
-
-MARK VERIFIED
-
-</button>
-
-
-<button onclick="markFailed()">
-
-MARK FAILED
-
-</button>
-
-
-<button onclick="clearConsole()">
-
-CLEAR SESSION
-
-</button>
-
+<button onclick="markVerified()">MARK VERIFIED</button>
+<button onclick="markFailed()">MARK FAILED</button>
+<button onclick="clearSession()">CLEAR SESSION</button>
 
 <p class="note">
-
-VERIFIED should mean that observable evidence supports the result — not merely that an AI or external system reported success.
-
+Recovery is triggered only when verification reveals missing or failed evidence. It should close specific gaps, not endlessly expand the task.
 </p>
 
 </div>
 
-
-<a
-href="https://www.amazon.co.uk/"
-target="_blank"
-rel="noopener">
-
+<a href="https://www.amazon.co.uk/" target="_blank" rel="noopener">
 SHOPPING
-
-<small>
-Research and selection first. Purchase remains manually authorised.
-</small>
-
+<small>Research and selection first. Purchase remains manually authorised.</small>
 </a>
 
-
-<a
-href="https://chatgpt.com/"
-target="_blank"
-rel="noopener">
-
+<a href="https://chatgpt.com/" target="_blank" rel="noopener">
 ASCENSION VISOR
-
-<small>
-Project entry point. Dedicated workspace integration comes later.
-</small>
-
+<small>Project entry point. Dedicated workspace integration comes later.</small>
 </a>
 
-
-<a
-href="https://keep.google.com/"
-target="_blank"
-rel="noopener">
-
+<a href="https://keep.google.com/" target="_blank" rel="noopener">
 NOTES
-
-<small>
-Capture intentions, instructions, checkpoints and confirmations.
-</small>
-
+<small>Capture intentions, evidence, checkpoints and confirmations.</small>
 </a>
 
-
-<a
-href="#"
-onclick="systemStatus();return false;">
-
+<a href="#" onclick="systemStatus();return false;">
 SYSTEM STATUS
-
-<small>
-Check the hub and current verification state.
-</small>
-
+<small>Check the hub and current loop state.</small>
 </a>
-
 
 <div class="locked">
-
 PAYMENTS — LOCKED
-
-<small>
-No financial action can execute from this hub.
-</small>
-
+<small>No financial action can execute from this hub yet.</small>
 </div>
-
 
 <div class="rule">
-
-<b>AI proposes.</b>
-Rules constrain.
-You authorise.
-
-<br>
-
-External systems execute.
-<b>Malkuth verifies.</b>
-
+<b>AI proposes.</b> Rules constrain. You authorise.<br>
+External systems execute. <b>Malkuth verifies.</b>
 </div>
 
-
-<div class="footer">
-
-v2.5 EXPERIMENTAL • v2.4 stable checkpoint
-
-</div>
+<div class="footer">v2.6 EXPERIMENTAL • v2.5 remains the stable checkpoint</div>
 
 </main>
-
 </body>
 </html>
