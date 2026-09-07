@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v2.3</title>
+<title>Malkuth Control Hub v2.4</title>
 
 <style>
 *{box-sizing:border-box}
@@ -85,6 +85,10 @@ textarea{
 #request{min-height:110px}
 #prepared{min-height:290px}
 button{cursor:pointer;text-align:center}
+#handoff{
+  border-color:#806b35;
+  background:#242126
+}
 .note{font-size:12px;color:#a9b0bd;line-height:1.4}
 .rule{
   margin-top:22px;
@@ -111,34 +115,64 @@ Interpret my request and return:
 
 Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
 
-function prepareCommand(){
+function buildPrepared(){
   const request=document.getElementById('request').value.trim();
+  if(!request) return '';
+  return protocol + '\n\nMY REQUEST:\n' + request;
+}
+
+function prepareCommand(){
+  const prepared=buildPrepared();
   const out=document.getElementById('prepared');
 
-  if(!request){
+  if(!prepared){
     alert('Type your command first.');
     return;
   }
 
-  out.value = protocol + '\n\nMY REQUEST:\n' + request;
+  out.value=prepared;
   out.scrollIntoView({behavior:'smooth'});
 }
 
 async function copyPrepared(){
   const out=document.getElementById('prepared');
+  const prepared=out.value.trim() || buildPrepared();
 
-  if(!out.value.trim()){
-    alert('Prepare the command first.');
+  if(!prepared){
+    alert('Type your command first.');
     return;
   }
 
+  out.value=prepared;
+
   try{
-    await navigator.clipboard.writeText(out.value);
+    await navigator.clipboard.writeText(prepared);
     alert('Prepared command copied.');
   }catch(e){
     out.focus();
     out.select();
     alert('Copy the highlighted command.');
+  }
+}
+
+async function handoffToChatGPT(){
+  const out=document.getElementById('prepared');
+  const prepared=out.value.trim() || buildPrepared();
+
+  if(!prepared){
+    alert('Type your command first.');
+    return;
+  }
+
+  out.value=prepared;
+
+  try{
+    await navigator.clipboard.writeText(prepared);
+    window.location.href='https://chatgpt.com/';
+  }catch(e){
+    out.focus();
+    out.select();
+    alert('Your browser blocked automatic clipboard access. Copy the highlighted command, then tap OPEN CHATGPT.');
   }
 }
 
@@ -149,10 +183,11 @@ function clearConsole(){
 
 function systemStatus(){
   alert(
-    'Malkuth Control Hub v2.3\n\n' +
+    'Malkuth Control Hub v2.4\n\n' +
     'NFC trigger: active\n' +
     'Hub: online\n' +
     'Command console: active\n' +
+    'One-tap handoff: active\n' +
     'Shopping: active\n' +
     'Visor workspace: basic\n' +
     'Notes: active\n' +
@@ -166,7 +201,7 @@ function systemStatus(){
 <main>
 
 <h1>Malkuth Control Hub</h1>
-<p class="sub">Phase 2.3 • Command console</p>
+<p class="sub">Phase 2.4 • One-tap handoff</p>
 
 <div class="status">
   <span>System</span>
@@ -177,7 +212,7 @@ function systemStatus(){
 <div id="console">
   <div class="card primary">
     COMMAND CONSOLE
-    <small>Type the request once. The hub prepares the protocol around it.</small>
+    <small>Type your request once. The hub prepares the protocol automatically.</small>
   </div>
 
   <label for="request">YOUR COMMAND</label>
@@ -188,17 +223,20 @@ function systemStatus(){
   <label for="prepared">PREPARED COMMAND</label>
   <textarea id="prepared" readonly placeholder="Your structured command will appear here."></textarea>
 
+  <button id="handoff" onclick="handoffToChatGPT()">HAND OFF TO CHATGPT</button>
+
   <button onclick="copyPrepared()">COPY PREPARED COMMAND</button>
 
   <a href="https://chatgpt.com/" target="_blank" rel="noopener">
     OPEN CHATGPT
-    <small>Paste the prepared command and send it.</small>
+    <small>Fallback if automatic handoff is blocked.</small>
   </a>
 
   <button onclick="clearConsole()">CLEAR CONSOLE</button>
 
   <p class="note">
-    The hub prepares instructions only. Consequential or external actions still require your explicit authorisation.
+    HAND OFF TO CHATGPT prepares the protocol, copies it to your clipboard, and opens ChatGPT.
+    You still paste/send inside ChatGPT, preserving your final authorisation step.
   </p>
 </div>
 
@@ -232,9 +270,8 @@ function systemStatus(){
   External systems execute. <b>Malkuth verifies.</b>
 </div>
 
-<div class="footer">v2.3 EXPERIMENTAL • v2.2 remains the stable baseline</div>
+<div class="footer">v2.4 EXPERIMENTAL • v2.3 remains the rollback point</div>
 
 </main>
 </body>
 </html>
-
