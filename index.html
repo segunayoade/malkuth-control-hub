@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v2.8</title>
+<title>Malkuth Control Hub v2.9</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0d12;color:#f4f1e8;font-family:Arial,sans-serif;padding:24px}
@@ -53,6 +53,26 @@ button{cursor:pointer;text-align:center}
   display:grid;
   grid-template-columns:1fr 1fr;
   gap:10px
+}
+.quickActions{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:14px 0 20px
+}
+.quickAction{
+  min-height:92px;
+  margin:0;
+  padding:14px;
+  text-align:center;
+  border-color:#806b35
+}
+.quickAction small{
+  display:block;
+  margin-top:6px;
+  color:#a9b0bd;
+  font-weight:400;
+  line-height:1.25
 }
 .note{font-size:12px;color:#a9b0bd;line-height:1.4}
 .rule{margin-top:22px;padding-top:18px;border-top:1px solid #2a3140;text-align:center;color:#a9b0bd;line-height:1.5;font-size:13px}
@@ -239,6 +259,7 @@ function getPresets(){
 function setPresets(items){
   localStorage.setItem(PRESET_KEY, JSON.stringify(items));
   renderPresets();
+  renderQuickActions();
 }
 
 function saveCurrentAsPreset(){
@@ -275,6 +296,59 @@ function usePreset(id){
 function deletePreset(id){
   if(!confirm("Delete this command preset?")) return;
   setPresets(getPresets().filter(x=>x.id!==id));
+}
+
+
+function renderQuickActions(){
+  const box=document.getElementById("quickActions");
+  if(!box) return;
+
+  const presets=getPresets();
+
+  if(!presets.length){
+    box.innerHTML=
+      '<div class="historyMeta" style="grid-column:1/-1">'+
+      'No quick actions yet. Save a command preset below and it will appear here.'+
+      '</div>';
+    return;
+  }
+
+  box.innerHTML="";
+
+  presets.slice(0,4).forEach(p=>{
+    const btn=document.createElement("button");
+    btn.className="quickAction";
+
+    const title=document.createElement("span");
+    title.textContent=p.name;
+
+    const small=document.createElement("small");
+    small.textContent="Load command";
+
+    btn.append(title,small);
+    btn.onclick=()=>quickLoadPreset(p.id);
+
+    box.appendChild(btn);
+  });
+}
+
+function quickLoadPreset(id){
+  const p=getPresets().find(x=>x.id===id);
+  if(!p) return;
+
+  document.getElementById("request").value=p.command;
+  document.getElementById("prepared").value="";
+  document.getElementById("evidence").value="";
+  document.getElementById("verification").value="";
+  document.getElementById("verdict").value="";
+  document.getElementById("recovery").value="";
+
+  setState("QUICK ACTION LOADED");
+
+  document.getElementById("request").scrollIntoView({
+    behavior:"smooth",
+    block:"center"
+  });
 }
 
 function renderPresets(){
@@ -392,24 +466,33 @@ function clearSession(){
 
 function systemStatus(){
   const count=getLedger().length;
-  alert("Malkuth Control Hub v2.8\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
+  alert("Malkuth Control Hub v2.9\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
 }
 
 window.addEventListener("DOMContentLoaded",()=>{
   updateLedgerCount();
   renderHistory();
   renderPresets();
+  renderQuickActions();
 });
 </script>
 </head>
 <body>
 <main>
 <h1>Malkuth Control Hub</h1>
-<p class="sub">Phase 2.8 • Ledger History + Presets</p>
+<p class="sub">Phase 2.9 • Quick Actions</p>
 <div class="status"><span>System</span><span class="ok">ONLINE</span><span>Payments: LOCKED</span></div>
 <div class="console">
 <div class="card primary">EXECUTE + VERIFY + RECOVER + RECORD<small>Intent → Handoff → Evidence → Verification → Recovery → Resolution → Ledger</small></div>
 <div class="state">STATE: <span id="stateText">READY</span></div>
+
+<div class="card primary">
+QUICK ACTIONS
+<small>Your first four saved presets appear here. A tap only loads the command — you still inspect, prepare and authorise the handoff.</small>
+</div>
+
+<div id="quickActions" class="quickActions"></div>
+
 <label for="request">YOUR COMMAND</label>
 <textarea id="request" placeholder="Example: Find the cheapest brand-new XREAL One Pro in the UK."></textarea>
 <button onclick="prepareCommand()">PREPARE COMMAND</button>
@@ -475,7 +558,7 @@ COMMAND PRESETS
 <a href="#" onclick="systemStatus();return false;">SYSTEM STATUS<small>Check the hub, loop state and local ledger count.</small></a>
 <div class="locked">PAYMENTS — LOCKED<small>No financial action can execute from this hub yet.</small></div>
 <div class="rule"><b>AI proposes.</b> Rules constrain. You authorise.<br>External systems execute. <b>Malkuth verifies.</b></div>
-<div class="footer">v2.8 EXPERIMENTAL • v2.7 stable checkpoint</div>
+<div class="footer">v2.9 EXPERIMENTAL • v2.8 stable checkpoint</div>
 </main>
 </body>
-  </html>
+</html>
