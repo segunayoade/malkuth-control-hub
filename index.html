@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v2.7</title>
+<title>Malkuth Control Hub v2.8</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0d12;color:#f4f1e8;font-family:Arial,sans-serif;padding:24px}
@@ -29,6 +29,31 @@ button{cursor:pointer;text-align:center}
 .state span{color:#d9b65d}
 .ledgerBox{margin-top:20px;padding-top:18px;border-top:1px solid #2a3140}
 .ledgerCount{color:#a9b0bd;font-size:12px;text-align:center;margin:8px 0 14px}
+.historyList{
+  display:grid;
+  gap:10px;
+  margin:12px 0
+}
+.historyItem{
+  border:1px solid #30394c;
+  border-radius:14px;
+  padding:12px;
+  background:#0b0d12
+}
+.historyItem button{
+  margin:8px 0 0;
+  padding:12px
+}
+.historyMeta{
+  color:#a9b0bd;
+  font-size:12px;
+  line-height:1.4
+}
+.presetRow{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px
+}
 .note{font-size:12px;color:#a9b0bd;line-height:1.4}
 .rule{margin-top:22px;padding-top:18px;border-top:1px solid #2a3140;text-align:center;color:#a9b0bd;line-height:1.5;font-size:13px}
 .rule b{color:#d9b65d}
@@ -47,6 +72,8 @@ Interpret my request and return:
 Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
 
 const LEDGER_KEY = "malkuthLedger_v2_7";
+const PRESET_KEY = "malkuthPresets_v2_8";
+let selectedLedgerId = null;
 let currentState="READY";
 
 function setState(state){currentState=state;document.getElementById("stateText").textContent=state;}
@@ -200,6 +227,164 @@ function deleteLastSession(){
   ledger.shift();setLedger(ledger);document.getElementById("ledgerView").value="";alert("Last saved session deleted.");
 }
 
+
+function getPresets(){
+  try{
+    return JSON.parse(localStorage.getItem(PRESET_KEY) || "[]");
+  }catch(e){
+    return [];
+  }
+}
+
+function setPresets(items){
+  localStorage.setItem(PRESET_KEY, JSON.stringify(items));
+  renderPresets();
+}
+
+function saveCurrentAsPreset(){
+  const request=document.getElementById("request").value.trim();
+  if(!request){
+    alert("Type or load a command first.");
+    return;
+  }
+
+  const name=prompt("Name this command preset:");
+  if(!name || !name.trim()) return;
+
+  const presets=getPresets();
+  presets.unshift({
+    id:Date.now(),
+    name:name.trim(),
+    command:request
+  });
+
+  if(presets.length>12) presets.length=12;
+  setPresets(presets);
+  alert("Command preset saved locally.");
+}
+
+function usePreset(id){
+  const p=getPresets().find(x=>x.id===id);
+  if(!p) return;
+  document.getElementById("request").value=p.command;
+  document.getElementById("prepared").value="";
+  setState("READY");
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function deletePreset(id){
+  if(!confirm("Delete this command preset?")) return;
+  setPresets(getPresets().filter(x=>x.id!==id));
+}
+
+function renderPresets(){
+  const box=document.getElementById("presetList");
+  if(!box) return;
+  const presets=getPresets();
+
+  if(!presets.length){
+    box.innerHTML='<div class="historyMeta">No command presets saved yet.</div>';
+    return;
+  }
+
+  box.innerHTML="";
+  presets.forEach(p=>{
+    const item=document.createElement("div");
+    item.className="historyItem";
+
+    const title=document.createElement("b");
+    title.textContent=p.name;
+
+    const meta=document.createElement("div");
+    meta.className="historyMeta";
+    meta.textContent=p.command;
+
+    const row=document.createElement("div");
+    row.className="presetRow";
+
+    const use=document.createElement("button");
+    use.textContent="USE";
+    use.onclick=()=>usePreset(p.id);
+
+    const del=document.createElement("button");
+    del.textContent="DELETE";
+    del.onclick=()=>deletePreset(p.id);
+
+    row.append(use,del);
+    item.append(title,meta,row);
+    box.appendChild(item);
+  });
+}
+
+function renderHistory(){
+  const box=document.getElementById("historyList");
+  if(!box) return;
+  const ledger=getLedger();
+
+  if(!ledger.length){
+    box.innerHTML='<div class="historyMeta">No saved ledger sessions yet.</div>';
+    return;
+  }
+
+  box.innerHTML="";
+  ledger.forEach((r,index)=>{
+    const item=document.createElement("div");
+    item.className="historyItem";
+
+    const title=document.createElement("b");
+    title.textContent=(index+1)+". "+(r.request || "Untitled command");
+
+    const meta=document.createElement("div");
+    meta.className="historyMeta";
+    meta.textContent=new Date(r.savedAt).toLocaleString()+" • "+(r.state || "UNKNOWN");
+
+    const load=document.createElement("button");
+    load.textContent="LOAD THIS SESSION";
+    load.onclick=()=>loadSessionById(r.id);
+
+    item.append(title,meta,load);
+    box.appendChild(item);
+  });
+}
+
+function loadSessionById(id){
+  const r=getLedger().find(x=>x.id===id);
+  if(!r) return;
+
+  selectedLedgerId=id;
+  document.getElementById("request").value=r.request || "";
+  document.getElementById("prepared").value=r.prepared || "";
+  document.getElementById("evidence").value=r.evidence || "";
+  document.getElementById("verification").value=r.verification || "";
+  document.getElementById("verdict").value=r.verdict || "";
+  document.getElementById("recovery").value=r.recovery || "";
+  setState(r.state || "LOADED");
+
+  document.getElementById("ledgerView").value=
+`MALKUTH LEDGER — SELECTED SESSION
+
+SAVED:
+${new Date(r.savedAt).toLocaleString()}
+
+FINAL STATE:
+${r.state}
+
+COMMAND:
+${r.request || "(empty)"}
+
+EVIDENCE:
+${r.evidence || "(none recorded)"}
+
+VERDICT:
+${r.verdict || "(none recorded)"}
+
+RECOVERY:
+${r.recovery || "(none recorded)"}`;
+
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+
 function clearSession(){
   ["request","prepared","evidence","verification","verdict","recovery"].forEach(id=>document.getElementById(id).value="");
   setState("READY");
@@ -207,16 +392,20 @@ function clearSession(){
 
 function systemStatus(){
   const count=getLedger().length;
-  alert("Malkuth Control Hub v2.7\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
+  alert("Malkuth Control Hub v2.8\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
 }
 
-window.addEventListener("DOMContentLoaded",updateLedgerCount);
+window.addEventListener("DOMContentLoaded",()=>{
+  updateLedgerCount();
+  renderHistory();
+  renderPresets();
+});
 </script>
 </head>
 <body>
 <main>
 <h1>Malkuth Control Hub</h1>
-<p class="sub">Phase 2.7 • Malkuth Ledger</p>
+<p class="sub">Phase 2.8 • Ledger History + Presets</p>
 <div class="status"><span>System</span><span class="ok">ONLINE</span><span>Payments: LOCKED</span></div>
 <div class="console">
 <div class="card primary">EXECUTE + VERIFY + RECOVER + RECORD<small>Intent → Handoff → Evidence → Verification → Recovery → Resolution → Ledger</small></div>
@@ -252,6 +441,31 @@ window.addEventListener("DOMContentLoaded",updateLedgerCount);
 <button onclick="deleteLastSession()">DELETE LAST SAVED SESSION</button>
 <p class="note">Ledger data is stored with browser localStorage on this device/browser only. Clearing browser site data may remove it. Saving is always manual.</p>
 </div>
+
+<div class="ledgerBox">
+
+<div class="card primary">
+LEDGER HISTORY
+<small>Browse all locally saved sessions and reopen any one of them.</small>
+</div>
+
+<div id="historyList" class="historyList"></div>
+
+</div>
+
+<div class="ledgerBox">
+
+<div class="card primary">
+COMMAND PRESETS
+<small>Turn useful recurring commands into one-tap starting points. Presets prepare text only; they never execute external actions.</small>
+</div>
+
+<button class="gold" onclick="saveCurrentAsPreset()">SAVE CURRENT COMMAND AS PRESET</button>
+
+<div id="presetList" class="historyList"></div>
+
+</div>
+
 <button onclick="clearSession()">CLEAR CURRENT SESSION</button>
 <p class="note">Clearing the current session does not delete saved ledger records.</p>
 </div>
@@ -261,7 +475,7 @@ window.addEventListener("DOMContentLoaded",updateLedgerCount);
 <a href="#" onclick="systemStatus();return false;">SYSTEM STATUS<small>Check the hub, loop state and local ledger count.</small></a>
 <div class="locked">PAYMENTS — LOCKED<small>No financial action can execute from this hub yet.</small></div>
 <div class="rule"><b>AI proposes.</b> Rules constrain. You authorise.<br>External systems execute. <b>Malkuth verifies.</b></div>
-<div class="footer">v2.7 EXPERIMENTAL • v2.6 stable checkpoint</div>
+<div class="footer">v2.8 EXPERIMENTAL • v2.7 stable checkpoint</div>
 </main>
 </body>
-</html>
+  </html>
