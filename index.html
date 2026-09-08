@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v2.9</title>
+<title>Malkuth Control Hub v3.0</title>
 <style>
 *{box-sizing:border-box}
 body{margin:0;background:#0b0d12;color:#f4f1e8;font-family:Arial,sans-serif;padding:24px}
@@ -74,6 +74,74 @@ button{cursor:pointer;text-align:center}
   font-weight:400;
   line-height:1.25
 }
+.hero{
+  position:relative;
+  overflow:hidden;
+  padding:22px;
+  margin-bottom:18px;
+  border:1px solid #806b35;
+  border-radius:22px;
+  background:
+    radial-gradient(circle at 50% 0%,rgba(217,182,93,.13),transparent 42%),
+    linear-gradient(145deg,#171c29,#0d111a);
+  text-align:center
+}
+.heroMark{
+  width:64px;
+  height:64px;
+  margin:0 auto 12px;
+  border:1px solid #a8893f;
+  border-radius:50%;
+  display:grid;
+  place-items:center;
+  font-family:Georgia,serif;
+  font-size:28px;
+  color:#d9b65d;
+  box-shadow:0 0 28px rgba(217,182,93,.12),inset 0 0 18px rgba(217,182,93,.06)
+}
+.heroTitle{
+  font-family:Georgia,serif;
+  color:#d9b65d;
+  letter-spacing:1px;
+  font-size:17px
+}
+.heroSub{
+  color:#8f98a8;
+  font-size:12px;
+  margin-top:6px
+}
+.navGrid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:10px;
+  margin:14px 0 20px
+}
+.navGrid button{
+  margin:0;
+  padding:14px 8px;
+  text-align:center;
+  border-color:#806b35
+}
+.sectionHead{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin:20px 0 10px;
+  padding:14px 16px;
+  border:1px solid #806b35;
+  border-radius:16px;
+  background:#171c29;
+  color:#d9b65d;
+  font-weight:700
+}
+.sectionHead button{
+  width:auto;
+  margin:0;
+  padding:8px 12px;
+  font-size:12px
+}
+.collapsible.hidden{display:none}
 .note{font-size:12px;color:#a9b0bd;line-height:1.4}
 .rule{margin-top:22px;padding-top:18px;border-top:1px solid #2a3140;text-align:center;color:#a9b0bd;line-height:1.5;font-size:13px}
 .rule b{color:#d9b65d}
@@ -247,6 +315,19 @@ function deleteLastSession(){
   ledger.shift();setLedger(ledger);document.getElementById("ledgerView").value="";alert("Last saved session deleted.");
 }
 
+
+
+function jumpTo(id){
+  const el=document.getElementById(id);
+  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
+}
+
+function toggleSection(id,button){
+  const el=document.getElementById(id);
+  if(!el) return;
+  el.classList.toggle("hidden");
+  if(button) button.textContent=el.classList.contains("hidden") ? "OPEN" : "CLOSE";
+}
 
 function getPresets(){
   try{
@@ -466,7 +547,7 @@ function clearSession(){
 
 function systemStatus(){
   const count=getLedger().length;
-  alert("Malkuth Control Hub v2.9\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
+  alert("Malkuth Control Hub v3.0\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
 }
 
 window.addEventListener("DOMContentLoaded",()=>{
@@ -480,13 +561,13 @@ window.addEventListener("DOMContentLoaded",()=>{
 <body>
 <main>
 <h1>Malkuth Control Hub</h1>
-<p class="sub">Phase 2.9 • Quick Actions</p>
+<p class="sub">Phase 3.0 • Operating Interface</p>
 <div class="status"><span>System</span><span class="ok">ONLINE</span><span>Payments: LOCKED</span></div>
 <div class="console">
 <div class="card primary">EXECUTE + VERIFY + RECOVER + RECORD<small>Intent → Handoff → Evidence → Verification → Recovery → Resolution → Ledger</small></div>
 <div class="state">STATE: <span id="stateText">READY</span></div>
 
-<div class="card primary">
+<div class="card primary" id="quickZone">
 QUICK ACTIONS
 <small>Your first four saved presets appear here. A tap only loads the command — you still inspect, prepare and authorise the handoff.</small>
 </div>
@@ -499,6 +580,13 @@ QUICK ACTIONS
 <label for="prepared">PREPARED COMMAND</label>
 <textarea id="prepared" readonly placeholder="Your structured command will appear here."></textarea>
 <button class="gold" onclick="handoff()">HAND OFF TO CHATGPT</button>
+<div class="sectionHead" id="verifyZone">
+<span>VERIFICATION + RECOVERY</span>
+<button onclick="toggleSection('verifyBody',this)">OPEN</button>
+</div>
+
+<div id="verifyBody" class="collapsible hidden">
+
 <label for="evidence">RESULT / EVIDENCE</label>
 <textarea id="evidence" placeholder="Paste the returned result or supporting evidence here."></textarea>
 <button onclick="prepareVerification()">PREPARE VERIFICATION</button>
@@ -525,6 +613,13 @@ QUICK ACTIONS
 <p class="note">Ledger data is stored with browser localStorage on this device/browser only. Clearing browser site data may remove it. Saving is always manual.</p>
 </div>
 
+<div class="sectionHead">
+<span>HISTORY + PRESET MANAGEMENT</span>
+<button onclick="toggleSection('manageBody',this)">OPEN</button>
+</div>
+
+<div id="manageBody" class="collapsible hidden">
+
 <div class="ledgerBox">
 
 <div class="card primary">
@@ -549,6 +644,8 @@ COMMAND PRESETS
 
 </div>
 
+</div>
+
 <button onclick="clearSession()">CLEAR CURRENT SESSION</button>
 <p class="note">Clearing the current session does not delete saved ledger records.</p>
 </div>
@@ -558,7 +655,7 @@ COMMAND PRESETS
 <a href="#" onclick="systemStatus();return false;">SYSTEM STATUS<small>Check the hub, loop state and local ledger count.</small></a>
 <div class="locked">PAYMENTS — LOCKED<small>No financial action can execute from this hub yet.</small></div>
 <div class="rule"><b>AI proposes.</b> Rules constrain. You authorise.<br>External systems execute. <b>Malkuth verifies.</b></div>
-<div class="footer">v2.9 EXPERIMENTAL • v2.8 stable checkpoint</div>
+<div class="footer">v3.0 EXPERIMENTAL • v2.9 stable checkpoint</div>
 </main>
 </body>
 </html>
