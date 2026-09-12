@@ -7,9 +7,11 @@
 <title>Malkuth Control Hub v3.1</title>
 <style>
 *{box-sizing:border-box}
-html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;min-height:100%}
-.stage{min-height:100vh;display:grid;place-items:center;background:#000}
-.dashboard{position:relative;width:min(100vw,1280px);line-height:0}
+html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;min-height:100%;overflow:hidden}
+.stage{position:relative;isolation:isolate;min-height:100vh;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:#000}
+.stage::before{content:"";position:absolute;z-index:-2;inset:-32px;background:url("malkuth-v3.1-visual-master.png") center/cover no-repeat;filter:blur(22px) brightness(.38);transform:scale(1.08)}
+.stage::after{content:"";position:absolute;z-index:-1;inset:0;background:rgba(0,0,0,.18)}
+.dashboard{position:relative;width:min(100vw,calc(100dvh * 1.0942452),1280px);line-height:0}
 .dashboard img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
 .hotspot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:14px}
 .hotspot:active{background:rgba(225,185,83,.14);box-shadow:0 0 0 1px rgba(225,185,83,.45)}
