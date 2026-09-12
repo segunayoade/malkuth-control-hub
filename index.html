@@ -13,6 +13,7 @@ html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;mi
 .stage::after{content:"";position:absolute;z-index:0;inset:0;background:rgba(0,0,0,.18)}
 .dashboard{position:relative;z-index:1;width:min(100vw,calc(100dvh * 1.0942452),1280px);line-height:0}
 .dashboard img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.mobile-tray{display:none}
 .hotspot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:14px}
 .hotspot:active{background:rgba(225,185,83,.14);box-shadow:0 0 0 1px rgba(225,185,83,.45)}
 .create{left:44.2%;top:29.9%;width:18.5%;height:4.0%}
@@ -33,9 +34,19 @@ button.action{padding:13px;border-radius:12px;border:1px solid #8f7138;backgroun
 button.primary{background:linear-gradient(135deg,#8d6a2a,#d1ad54);color:#0b0b09}
 .status{margin-top:13px;padding-top:12px;border-top:1px solid #3f3520;color:#8f897d;font-size:11px;letter-spacing:.06em}
 @media(max-width:700px){
+ html,body{overflow:auto}
+ .stage{min-height:100dvh;display:block;background:#050606}
+ .stage::before,.stage::after{display:none}
  .dashboard{width:100vw}
  .intent{left:42%;width:22%}
  .create,.retrieve,.act,.verify,.explore{left:42%;width:22%}
+ .mobile-tray{display:block;width:100%;padding:12px max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));background:linear-gradient(180deg,#090a08,#020303);border-top:1px solid #725724;line-height:1.25}
+ .mobile-intent{width:100%;min-height:48px;border:1px solid #b68b38;border-radius:12px;background:linear-gradient(135deg,#18150e,#090a08);color:#f1dfaa;font-weight:700;letter-spacing:.04em}
+ .mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
+ .mobile-action{min-height:47px;padding:8px 10px;border:1px solid #725724;border-radius:11px;background:#0c0d0b;color:#ead79d;text-align:left;font-weight:700}
+ .mobile-action small{display:block;margin-top:2px;color:#8f897d;font-size:10px;font-weight:400}
+ .mobile-action:last-child{grid-column:1/-1}
+ .mobile-flow{margin-top:10px;text-align:center;color:#8f7138;font-size:9px;letter-spacing:.09em}
 }
 </style>
 </head>
@@ -50,6 +61,17 @@ button.primary{background:linear-gradient(135deg,#8d6a2a,#d1ad54);color:#0b0b09}
   <button class="hotspot verify" aria-label="Verify" onclick="openIntent('Verify')"></button>
   <button class="hotspot explore" aria-label="Explore" onclick="openIntent('Explore')"></button>
  </main>
+ <nav class="mobile-tray" aria-label="Malkuth mobile controls">
+  <button class="mobile-intent" onclick="openIntent('Intention')">WHAT DO YOU WANT TO HAPPEN?</button>
+  <div class="mobile-actions">
+   <button class="mobile-action" onclick="openIntent('Create')">CREATE<small>Make an intention</small></button>
+   <button class="mobile-action" onclick="openIntent('Retrieve')">RETRIEVE<small>Access and review</small></button>
+   <button class="mobile-action" onclick="openIntent('Act')">ACT<small>Execute and automate</small></button>
+   <button class="mobile-action" onclick="openIntent('Verify')">VERIFY<small>Confirm and record</small></button>
+   <button class="mobile-action" onclick="openIntent('Explore')">EXPLORE<small>Learn and expand</small></button>
+  </div>
+  <div class="mobile-flow">INTENTION → ACTION → RESULT → VERIFIED</div>
+ </nav>
 </div>
 
 <div id="modal" class="modal" onclick="if(event.target===this)closeIntent()">
