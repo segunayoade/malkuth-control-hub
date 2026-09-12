@@ -67,6 +67,7 @@ button.action:active{filter:brightness(1.22);border-color:#edc66f}
  .mobile-action:nth-child(4){top:62%}
  .mobile-action:nth-child(5){top:81%}
  .mobile-action:active,.mobile-intent:active{color:#fff1bd;filter:brightness(1.28);text-shadow:0 0 12px #e0aa45}
+ .mobile-action>span{display:block;font:700 clamp(20px,6.2vw,31px)/1 "Cinzel",Georgia,serif;letter-spacing:.055em;background:url("malkuth-create-modal-final.png") 48% 39%/185% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.45px #f1cf77;filter:drop-shadow(0 1px 2px #000) drop-shadow(0 0 4px rgba(225,164,52,.3))}
  .mobile-action small{display:block;margin-top:4px;color:#cdbb8c;font:400 clamp(9px,2.8vw,13px) Georgia,serif;letter-spacing:.04em;text-shadow:0 1px 3px #000}
  .mobile-flow{padding:10px 8px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(156,116,44,.35);text-align:center;color:#b98b3d;font-size:9px;letter-spacing:.11em;background:#030303}
 }
@@ -87,11 +88,11 @@ button.action:active{filter:brightness(1.22);border-color:#edc66f}
   <button class="mobile-intent" onclick="openIntent('Intention')">WHAT DO YOU WANT TO HAPPEN?</button>
   <div class="sacred-flow">
    <div class="mobile-actions">
-    <button class="mobile-action" onclick="openIntent('Create')">CREATE<small>Direct capability</small></button>
-    <button class="mobile-action" onclick="openIntent('Retrieve')">RETRIEVE<small>Reveal and understand</small></button>
-    <button class="mobile-action" onclick="openIntent('Act')">ACT<small>Cross the threshold</small></button>
-    <button class="mobile-action" onclick="openIntent('Verify')">VERIFY<small>Give action structure</small></button>
-    <button class="mobile-action" onclick="openIntent('Explore')">EXPLORE<small>Open the next horizon</small></button>
+    <button class="mobile-action" onclick="openIntent('Create')"><span>CREATE</span><small>Direct capability</small></button>
+    <button class="mobile-action" onclick="openIntent('Retrieve')"><span>RETRIEVE</span><small>Reveal and understand</small></button>
+    <button class="mobile-action" onclick="openIntent('Act')"><span>ACT</span><small>Cross the threshold</small></button>
+    <button class="mobile-action" onclick="openIntent('Verify')"><span>VERIFY</span><small>Give action structure</small></button>
+    <button class="mobile-action" onclick="openIntent('Explore')"><span>EXPLORE</span><small>Open the next horizon</small></button>
    </div>
   </div>
   <div class="mobile-flow">INTENTION → ACTION → RESULT → VERIFIED</div>
