@@ -2,660 +2,83 @@
 <html lang="en">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b0d12">
-<title>Malkuth Control Hub v3.0</title>
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#000000">
+<title>Malkuth Control Hub v3.1</title>
 <style>
 *{box-sizing:border-box}
-body{margin:0;background:#0b0d12;color:#f4f1e8;font-family:Arial,sans-serif;padding:24px}
-main{max-width:460px;margin:auto;background:#141823;border:1px solid #2a3140;border-radius:24px;padding:24px}
-h1{text-align:center;margin:0 0 8px;font-size:30px}
-.sub{text-align:center;color:#a9b0bd;margin:0 0 20px}
-.status{display:flex;justify-content:space-between;gap:8px;border:1px solid #2a3140;border-radius:16px;padding:12px;margin-bottom:16px;color:#a9b0bd;font-size:13px}
-.ok{color:#8dd7a8;font-weight:700}
-.card,a,.locked,button{display:block;width:100%;margin:12px 0;padding:18px;border-radius:18px;border:1px solid #30394c;background:#1a2030;color:#f4f1e8;text-decoration:none;font-weight:700;text-align:left}
-.primary,.gold{border-color:#806b35}
-a small,.locked small,.card small{display:block;margin-top:6px;color:#a9b0bd;font-weight:400;line-height:1.35}
-.locked{opacity:.55;border-style:dashed}
-.console{border:1px solid #806b35;border-radius:18px;padding:16px;margin:12px 0;background:#111622}
-label{display:block;margin:18px 0 8px;color:#d9b65d;font-weight:700}
-textarea{width:100%;background:#0b0d12;color:#f4f1e8;border:1px solid #30394c;border-radius:14px;padding:14px;font:14px/1.4 monospace;resize:vertical}
-#request{min-height:110px}
-#prepared,#verification,#recovery{min-height:250px}
-#evidence,#verdict{min-height:150px}
-#ledgerView{min-height:260px}
-button{cursor:pointer;text-align:center}
-.state{padding:14px;margin:16px 0;border:1px solid #30394c;border-radius:14px;color:#a9b0bd;text-align:center;font-weight:700}
-.state span{color:#d9b65d}
-.ledgerBox{margin-top:20px;padding-top:18px;border-top:1px solid #2a3140}
-.ledgerCount{color:#a9b0bd;font-size:12px;text-align:center;margin:8px 0 14px}
-.historyList{
-  display:grid;
-  gap:10px;
-  margin:12px 0
+html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;min-height:100%}
+.stage{min-height:100vh;display:grid;place-items:center;background:#000}
+.dashboard{position:relative;width:min(100vw,1280px);line-height:0}
+.dashboard img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+.hotspot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:14px}
+.hotspot:active{background:rgba(225,185,83,.14);box-shadow:0 0 0 1px rgba(225,185,83,.45)}
+.create{left:44.2%;top:29.9%;width:18.5%;height:4.0%}
+.retrieve{left:44.2%;top:34.1%;width:18.5%;height:4.0%}
+.act{left:44.2%;top:38.3%;width:18.5%;height:4.0%}
+.verify{left:44.2%;top:42.5%;width:18.5%;height:4.0%}
+.explore{left:44.2%;top:46.7%;width:18.5%;height:4.0%}
+.intent{left:44.0%;top:23.7%;width:19%;height:5.3%}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.84);display:none;place-items:center;padding:18px;z-index:20;line-height:1.45}
+.modal.open{display:grid}
+.card{width:min(640px,100%);background:linear-gradient(145deg,#11120f,#050606);border:1px solid #9d7934;border-radius:20px;padding:22px;box-shadow:0 24px 80px #000}
+.eyebrow{font-size:10px;letter-spacing:.3em;color:#9f8248}
+h1{font:400 30px Georgia,serif;letter-spacing:.04em;margin:8px 0 6px;color:#ead79d}
+p{color:#aaa393;font-size:13px}
+textarea{width:100%;min-height:120px;background:#050606;color:#f5ebcf;border:1px solid #6e572a;border-radius:13px;padding:14px;font:15px Arial;resize:vertical}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
+button.action{padding:13px;border-radius:12px;border:1px solid #8f7138;background:#15140f;color:#ead79d;font-weight:700}
+button.primary{background:linear-gradient(135deg,#8d6a2a,#d1ad54);color:#0b0b09}
+.status{margin-top:13px;padding-top:12px;border-top:1px solid #3f3520;color:#8f897d;font-size:11px;letter-spacing:.06em}
+@media(max-width:700px){
+ .dashboard{width:100vw}
+ .intent{left:42%;width:22%}
+ .create,.retrieve,.act,.verify,.explore{left:42%;width:22%}
 }
-.historyItem{
-  border:1px solid #30394c;
-  border-radius:14px;
-  padding:12px;
-  background:#0b0d12
-}
-.historyItem button{
-  margin:8px 0 0;
-  padding:12px
-}
-.historyMeta{
-  color:#a9b0bd;
-  font-size:12px;
-  line-height:1.4
-}
-.presetRow{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px
-}
-.quickActions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin:14px 0 20px
-}
-.quickAction{
-  min-height:92px;
-  margin:0;
-  padding:14px;
-  text-align:center;
-  border-color:#806b35
-}
-.quickAction small{
-  display:block;
-  margin-top:6px;
-  color:#a9b0bd;
-  font-weight:400;
-  line-height:1.25
-}
-.hero{
-  position:relative;
-  overflow:hidden;
-  padding:22px;
-  margin-bottom:18px;
-  border:1px solid #806b35;
-  border-radius:22px;
-  background:
-    radial-gradient(circle at 50% 0%,rgba(217,182,93,.13),transparent 42%),
-    linear-gradient(145deg,#171c29,#0d111a);
-  text-align:center
-}
-.heroMark{
-  width:64px;
-  height:64px;
-  margin:0 auto 12px;
-  border:1px solid #a8893f;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  font-family:Georgia,serif;
-  font-size:28px;
-  color:#d9b65d;
-  box-shadow:0 0 28px rgba(217,182,93,.12),inset 0 0 18px rgba(217,182,93,.06)
-}
-.heroTitle{
-  font-family:Georgia,serif;
-  color:#d9b65d;
-  letter-spacing:1px;
-  font-size:17px
-}
-.heroSub{
-  color:#8f98a8;
-  font-size:12px;
-  margin-top:6px
-}
-.navGrid{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:10px;
-  margin:14px 0 20px
-}
-.navGrid button{
-  margin:0;
-  padding:14px 8px;
-  text-align:center;
-  border-color:#806b35
-}
-.sectionHead{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
-  margin:20px 0 10px;
-  padding:14px 16px;
-  border:1px solid #806b35;
-  border-radius:16px;
-  background:#171c29;
-  color:#d9b65d;
-  font-weight:700
-}
-.sectionHead button{
-  width:auto;
-  margin:0;
-  padding:8px 12px;
-  font-size:12px
-}
-.collapsible.hidden{display:none}
-.note{font-size:12px;color:#a9b0bd;line-height:1.4}
-.rule{margin-top:22px;padding-top:18px;border-top:1px solid #2a3140;text-align:center;color:#a9b0bd;line-height:1.5;font-size:13px}
-.rule b{color:#d9b65d}
-.footer{text-align:center;margin-top:12px;color:#8f98a8;font-size:12px}
 </style>
-<script>
-const protocol = `Malkuth Control Hub command session.
-
-Interpret my request and return:
-1. INTENT — what I am asking to achieve.
-2. CONSTRAINTS — safety, permissions, cost, scope, or technical limits.
-3. PROPOSED ACTION — the smallest effective next action.
-4. AUTHORISATION — if the action is consequential or external, stop and wait for my explicit approval.
-5. VERIFICATION — after execution, state what evidence confirms the result.
-
-Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
-
-const LEDGER_KEY = "malkuthLedger_v2_7";
-const PRESET_KEY = "malkuthPresets_v2_8";
-let selectedLedgerId = null;
-let currentState="READY";
-
-function setState(state){currentState=state;document.getElementById("stateText").textContent=state;}
-async function copyText(text){try{await navigator.clipboard.writeText(text);return true;}catch(e){return false;}}
-function getLedger(){try{return JSON.parse(localStorage.getItem(LEDGER_KEY) || "[]");}catch(e){return [];}}
-function setLedger(items){localStorage.setItem(LEDGER_KEY, JSON.stringify(items));updateLedgerCount();}
-function updateLedgerCount(){const items=getLedger();const el=document.getElementById("ledgerCount");if(el) el.textContent=items.length+" saved session"+(items.length===1?"":"s")+" on this browser.";}
-
-function prepareCommand(){
-  const request=document.getElementById("request").value.trim();
-  if(!request){alert("Type your command first.");return false;}
-  document.getElementById("prepared").value=protocol+"\n\nMY REQUEST:\n"+request;
-  setState("PREPARED");return true;
-}
-
-async function handoff(){
-  if(!document.getElementById("prepared").value.trim()){if(!prepareCommand()) return;}
-  const text=document.getElementById("prepared").value;
-  await copyText(text);setState("HANDED OFF");window.open("https://chatgpt.com/","_blank");
-}
-
-function prepareVerification(){
-  const command=document.getElementById("prepared").value.trim();
-  const evidence=document.getElementById("evidence").value.trim();
-  if(!command){alert("Prepare a command first.");return false;}
-  if(!evidence){alert("Paste the result or evidence first.");return false;}
-  document.getElementById("verification").value=`Malkuth Verification Session.
-
-ORIGINAL COMMAND:
-
-${command}
-
-RESULT / EVIDENCE:
-
-${evidence}
-
-Evaluate the evidence and return:
-
-1. CLAIM — what result is being claimed.
-2. EVIDENCE — what observable evidence supports it.
-3. CONSISTENCY — whether the evidence actually matches the original command.
-4. LIMITATIONS — anything uncertain, incomplete, or unverified.
-5. VERDICT — VERIFIED, PARTIALLY VERIFIED, FAILED, or INSUFFICIENT EVIDENCE.
-
-Do not mark the action VERIFIED merely because a system or AI claims success. Base the verdict on supplied evidence.
-
-Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
-  setState("AWAITING VERIFICATION");return true;
-}
-
-async function verifyWithChatGPT(){
-  if(!document.getElementById("verification").value.trim()){if(!prepareVerification()) return;}
-  await copyText(document.getElementById("verification").value);setState("VERIFICATION HANDED OFF");window.open("https://chatgpt.com/","_blank");
-}
-
-function prepareRecovery(){
-  const original=document.getElementById("prepared").value.trim();
-  const verdict=document.getElementById("verdict").value.trim();
-  if(!original){alert("Prepare the original command first.");return false;}
-  if(!verdict){alert("Paste the verification verdict first.");return false;}
-  document.getElementById("recovery").value=`Malkuth Recovery Session.
-
-ORIGINAL COMMAND:
-
-${original}
-
-VERIFICATION RESULT:
-
-${verdict}
-
-Create a recovery action that resolves only the missing or failed verification points.
-
-Return:
-
-1. GAP — list the exact facts/evidence still missing.
-2. RECOVERY ACTION — the smallest targeted research/action needed to close those gaps.
-3. AUTHORISATION — state whether the recovery action is non-consequential or requires my explicit approval before execution.
-4. REQUIRED EVIDENCE — specify exactly what evidence would be sufficient on the next verification pass.
-5. STOP CONDITION — state what would count as VERIFIED, and when to stop rather than continue looping.
-
-Do not repeat work that has already been adequately verified.
-Do not broaden the scope beyond the original command unless I explicitly authorise it.
-
-Rule: AI proposes. Rules constrain. I authorise. External systems execute. Malkuth verifies.`;
-  setState("RECOVERY PREPARED");return true;
-}
-
-async function recoveryHandoff(){
-  if(!document.getElementById("recovery").value.trim()){if(!prepareRecovery()) return;}
-  await copyText(document.getElementById("recovery").value);setState("RECOVERY HANDED OFF");window.open("https://chatgpt.com/","_blank");
-}
-
-function markVerified(){setState("VERIFIED");}
-function markFailed(){setState("FAILED");}
-
-function saveSession(){
-  const request=document.getElementById("request").value.trim();
-  if(!request){alert("There is no command to save.");return;}
-  const record={
-    id:Date.now(),savedAt:new Date().toISOString(),state:currentState,request,
-    prepared:document.getElementById("prepared").value.trim(),
-    evidence:document.getElementById("evidence").value.trim(),
-    verification:document.getElementById("verification").value.trim(),
-    verdict:document.getElementById("verdict").value.trim(),
-    recovery:document.getElementById("recovery").value.trim()
-  };
-  const ledger=getLedger();ledger.unshift(record);if(ledger.length>25) ledger.length=25;
-  setLedger(ledger);setState("RECORDED");alert("Session saved to this browser's local Malkuth Ledger.");
-}
-
-function viewLastSession(){
-  const ledger=getLedger();const out=document.getElementById("ledgerView");
-  if(!ledger.length){out.value="No saved sessions yet.";return;}
-  const r=ledger[0];const when=new Date(r.savedAt).toLocaleString();
-  out.value=`MALKUTH LEDGER — LAST SESSION
-
-SAVED:
-${when}
-
-FINAL STATE:
-${r.state}
-
-COMMAND:
-${r.request || "(empty)"}
-
-EVIDENCE:
-${r.evidence || "(none recorded)"}
-
-VERDICT:
-${r.verdict || "(none recorded)"}
-
-RECOVERY:
-${r.recovery || "(none recorded)"}`;
-}
-
-function loadLastSession(){
-  const ledger=getLedger();if(!ledger.length){alert("No saved sessions yet.");return;}
-  const r=ledger[0];
-  document.getElementById("request").value=r.request||"";
-  document.getElementById("prepared").value=r.prepared||"";
-  document.getElementById("evidence").value=r.evidence||"";
-  document.getElementById("verification").value=r.verification||"";
-  document.getElementById("verdict").value=r.verdict||"";
-  document.getElementById("recovery").value=r.recovery||"";
-  setState(r.state||"LOADED");viewLastSession();alert("Last saved session loaded.");
-}
-
-function deleteLastSession(){
-  const ledger=getLedger();if(!ledger.length){alert("No saved sessions to delete.");return;}
-  if(!confirm("Delete the most recently saved ledger session from this browser?")) return;
-  ledger.shift();setLedger(ledger);document.getElementById("ledgerView").value="";alert("Last saved session deleted.");
-}
-
-
-
-function jumpTo(id){
-  const el=document.getElementById(id);
-  if(el) el.scrollIntoView({behavior:"smooth",block:"start"});
-}
-
-function toggleSection(id,button){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.classList.toggle("hidden");
-  if(button) button.textContent=el.classList.contains("hidden") ? "OPEN" : "CLOSE";
-}
-
-function getPresets(){
-  try{
-    return JSON.parse(localStorage.getItem(PRESET_KEY) || "[]");
-  }catch(e){
-    return [];
-  }
-}
-
-function setPresets(items){
-  localStorage.setItem(PRESET_KEY, JSON.stringify(items));
-  renderPresets();
-  renderQuickActions();
-}
-
-function saveCurrentAsPreset(){
-  const request=document.getElementById("request").value.trim();
-  if(!request){
-    alert("Type or load a command first.");
-    return;
-  }
-
-  const name=prompt("Name this command preset:");
-  if(!name || !name.trim()) return;
-
-  const presets=getPresets();
-  presets.unshift({
-    id:Date.now(),
-    name:name.trim(),
-    command:request
-  });
-
-  if(presets.length>12) presets.length=12;
-  setPresets(presets);
-  alert("Command preset saved locally.");
-}
-
-function usePreset(id){
-  const p=getPresets().find(x=>x.id===id);
-  if(!p) return;
-  document.getElementById("request").value=p.command;
-  document.getElementById("prepared").value="";
-  setState("READY");
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-function deletePreset(id){
-  if(!confirm("Delete this command preset?")) return;
-  setPresets(getPresets().filter(x=>x.id!==id));
-}
-
-
-function renderQuickActions(){
-  const box=document.getElementById("quickActions");
-  if(!box) return;
-
-  const presets=getPresets();
-
-  if(!presets.length){
-    box.innerHTML=
-      '<div class="historyMeta" style="grid-column:1/-1">'+
-      'No quick actions yet. Save a command preset below and it will appear here.'+
-      '</div>';
-    return;
-  }
-
-  box.innerHTML="";
-
-  presets.slice(0,4).forEach(p=>{
-    const btn=document.createElement("button");
-    btn.className="quickAction";
-
-    const title=document.createElement("span");
-    title.textContent=p.name;
-
-    const small=document.createElement("small");
-    small.textContent="Load command";
-
-    btn.append(title,small);
-    btn.onclick=()=>quickLoadPreset(p.id);
-
-    box.appendChild(btn);
-  });
-}
-
-function quickLoadPreset(id){
-  const p=getPresets().find(x=>x.id===id);
-  if(!p) return;
-
-  document.getElementById("request").value=p.command;
-  document.getElementById("prepared").value="";
-  document.getElementById("evidence").value="";
-  document.getElementById("verification").value="";
-  document.getElementById("verdict").value="";
-  document.getElementById("recovery").value="";
-
-  setState("QUICK ACTION LOADED");
-
-  document.getElementById("request").scrollIntoView({
-    behavior:"smooth",
-    block:"center"
-  });
-}
-
-function renderPresets(){
-  const box=document.getElementById("presetList");
-  if(!box) return;
-  const presets=getPresets();
-
-  if(!presets.length){
-    box.innerHTML='<div class="historyMeta">No command presets saved yet.</div>';
-    return;
-  }
-
-  box.innerHTML="";
-  presets.forEach(p=>{
-    const item=document.createElement("div");
-    item.className="historyItem";
-
-    const title=document.createElement("b");
-    title.textContent=p.name;
-
-    const meta=document.createElement("div");
-    meta.className="historyMeta";
-    meta.textContent=p.command;
-
-    const row=document.createElement("div");
-    row.className="presetRow";
-
-    const use=document.createElement("button");
-    use.textContent="USE";
-    use.onclick=()=>usePreset(p.id);
-
-    const del=document.createElement("button");
-    del.textContent="DELETE";
-    del.onclick=()=>deletePreset(p.id);
-
-    row.append(use,del);
-    item.append(title,meta,row);
-    box.appendChild(item);
-  });
-}
-
-function renderHistory(){
-  const box=document.getElementById("historyList");
-  if(!box) return;
-  const ledger=getLedger();
-
-  if(!ledger.length){
-    box.innerHTML='<div class="historyMeta">No saved ledger sessions yet.</div>';
-    return;
-  }
-
-  box.innerHTML="";
-  ledger.forEach((r,index)=>{
-    const item=document.createElement("div");
-    item.className="historyItem";
-
-    const title=document.createElement("b");
-    title.textContent=(index+1)+". "+(r.request || "Untitled command");
-
-    const meta=document.createElement("div");
-    meta.className="historyMeta";
-    meta.textContent=new Date(r.savedAt).toLocaleString()+" • "+(r.state || "UNKNOWN");
-
-    const load=document.createElement("button");
-    load.textContent="LOAD THIS SESSION";
-    load.onclick=()=>loadSessionById(r.id);
-
-    item.append(title,meta,load);
-    box.appendChild(item);
-  });
-}
-
-function loadSessionById(id){
-  const r=getLedger().find(x=>x.id===id);
-  if(!r) return;
-
-  selectedLedgerId=id;
-  document.getElementById("request").value=r.request || "";
-  document.getElementById("prepared").value=r.prepared || "";
-  document.getElementById("evidence").value=r.evidence || "";
-  document.getElementById("verification").value=r.verification || "";
-  document.getElementById("verdict").value=r.verdict || "";
-  document.getElementById("recovery").value=r.recovery || "";
-  setState(r.state || "LOADED");
-
-  document.getElementById("ledgerView").value=
-`MALKUTH LEDGER — SELECTED SESSION
-
-SAVED:
-${new Date(r.savedAt).toLocaleString()}
-
-FINAL STATE:
-${r.state}
-
-COMMAND:
-${r.request || "(empty)"}
-
-EVIDENCE:
-${r.evidence || "(none recorded)"}
-
-VERDICT:
-${r.verdict || "(none recorded)"}
-
-RECOVERY:
-${r.recovery || "(none recorded)"}`;
-
-  window.scrollTo({top:0,behavior:"smooth"});
-}
-
-
-function clearSession(){
-  ["request","prepared","evidence","verification","verdict","recovery"].forEach(id=>document.getElementById(id).value="");
-  setState("READY");
-}
-
-function systemStatus(){
-  const count=getLedger().length;
-  alert("Malkuth Control Hub v3.0\n\nNFC trigger: active\nHub: online\nCommand console: active\nVerification loop: active\nRecovery loop: active\nLocal ledger: active ("+count+" saved)\nPayments: locked\n\nCurrent state: "+currentState);
-}
-
-window.addEventListener("DOMContentLoaded",()=>{
-  updateLedgerCount();
-  renderHistory();
-  renderPresets();
-  renderQuickActions();
-});
-</script>
 </head>
 <body>
-<main>
-<h1>Malkuth Control Hub</h1>
-<p class="sub">Phase 3.0 • Operating Interface</p>
-<div class="status"><span>System</span><span class="ok">ONLINE</span><span>Payments: LOCKED</span></div>
-<div class="console">
-<div class="card primary">EXECUTE + VERIFY + RECOVER + RECORD<small>Intent → Handoff → Evidence → Verification → Recovery → Resolution → Ledger</small></div>
-<div class="state">STATE: <span id="stateText">READY</span></div>
-
-<div class="card primary" id="quickZone">
-QUICK ACTIONS
-<small>Your first four saved presets appear here. A tap only loads the command — you still inspect, prepare and authorise the handoff.</small>
+<div class="stage">
+ <main class="dashboard" aria-label="Malkuth Control Hub">
+  <img src="malkuth-v3.1-visual-master.png" alt="Malkuth Control Hub v3.1 visual master">
+  <button class="hotspot intent" aria-label="State an intention" onclick="openIntent('Intention')"></button>
+  <button class="hotspot create" aria-label="Create" onclick="openIntent('Create')"></button>
+  <button class="hotspot retrieve" aria-label="Retrieve" onclick="openIntent('Retrieve')"></button>
+  <button class="hotspot act" aria-label="Act" onclick="openIntent('Act')"></button>
+  <button class="hotspot verify" aria-label="Verify" onclick="openIntent('Verify')"></button>
+  <button class="hotspot explore" aria-label="Explore" onclick="openIntent('Explore')"></button>
+ </main>
 </div>
 
-<div id="quickActions" class="quickActions"></div>
-
-<label for="request">YOUR COMMAND</label>
-<textarea id="request" placeholder="Example: Find the cheapest brand-new XREAL One Pro in the UK."></textarea>
-<button onclick="prepareCommand()">PREPARE COMMAND</button>
-<label for="prepared">PREPARED COMMAND</label>
-<textarea id="prepared" readonly placeholder="Your structured command will appear here."></textarea>
-<button class="gold" onclick="handoff()">HAND OFF TO CHATGPT</button>
-<div class="sectionHead" id="verifyZone">
-<span>VERIFICATION + RECOVERY</span>
-<button onclick="toggleSection('verifyBody',this)">OPEN</button>
+<div id="modal" class="modal" onclick="if(event.target===this)closeIntent()">
+ <section class="card">
+  <div class="eyebrow">INTENTION INTO REALITY</div>
+  <h1 id="mode">WHAT DO YOU WANT TO HAPPEN?</h1>
+  <p>State the outcome once. Malkuth resolves the route beneath the visual interface.</p>
+  <textarea id="intentText" placeholder="Tell Malkuth what you want to happen."></textarea>
+  <div class="row">
+   <button class="action primary" onclick="execute()">EXECUTE THROUGH CHATGPT</button>
+   <button class="action" onclick="closeIntent()">RETURN TO HUB</button>
+  </div>
+  <div class="status">INTENTION → RESOLVE → MANDATE → EXECUTE → VERIFY → LEARN</div>
+ </section>
 </div>
 
-<div id="verifyBody" class="collapsible hidden">
-
-<label for="evidence">RESULT / EVIDENCE</label>
-<textarea id="evidence" placeholder="Paste the returned result or supporting evidence here."></textarea>
-<button onclick="prepareVerification()">PREPARE VERIFICATION</button>
-<label for="verification">VERIFICATION REQUEST</label>
-<textarea id="verification" readonly placeholder="Verification request appears here."></textarea>
-<button class="gold" onclick="verifyWithChatGPT()">VERIFY WITH CHATGPT</button>
-<label for="verdict">VERIFICATION VERDICT</label>
-<textarea id="verdict" placeholder="Paste ChatGPT's verification verdict here, including limitations/gaps."></textarea>
-<button onclick="prepareRecovery()">PREPARE RECOVERY</button>
-<label for="recovery">RECOVERY REQUEST</label>
-<textarea id="recovery" readonly placeholder="Targeted recovery command appears here."></textarea>
-<button class="gold" onclick="recoveryHandoff()">HAND OFF RECOVERY TO CHATGPT</button>
-<button onclick="markVerified()">MARK VERIFIED</button>
-<button onclick="markFailed()">MARK FAILED</button>
-<div class="ledgerBox">
-<div class="card primary">MALKUTH LEDGER<small>Nothing is saved automatically. You decide when a session becomes part of the local record.</small></div>
-<div id="ledgerCount" class="ledgerCount">0 saved sessions on this browser.</div>
-<button class="gold" onclick="saveSession()">SAVE SESSION TO LEDGER</button>
-<button onclick="viewLastSession()">VIEW LAST SESSION</button>
-<button onclick="loadLastSession()">LOAD LAST SESSION</button>
-<label for="ledgerView">LEDGER VIEW</label>
-<textarea id="ledgerView" readonly placeholder="Your most recently saved session summary will appear here."></textarea>
-<button onclick="deleteLastSession()">DELETE LAST SAVED SESSION</button>
-<p class="note">Ledger data is stored with browser localStorage on this device/browser only. Clearing browser site data may remove it. Saving is always manual.</p>
-</div>
-
-<div class="sectionHead">
-<span>HISTORY + PRESET MANAGEMENT</span>
-<button onclick="toggleSection('manageBody',this)">OPEN</button>
-</div>
-
-<div id="manageBody" class="collapsible hidden">
-
-<div class="ledgerBox">
-
-<div class="card primary">
-LEDGER HISTORY
-<small>Browse all locally saved sessions and reopen any one of them.</small>
-</div>
-
-<div id="historyList" class="historyList"></div>
-
-</div>
-
-<div class="ledgerBox">
-
-<div class="card primary">
-COMMAND PRESETS
-<small>Turn useful recurring commands into one-tap starting points. Presets prepare text only; they never execute external actions.</small>
-</div>
-
-<button class="gold" onclick="saveCurrentAsPreset()">SAVE CURRENT COMMAND AS PRESET</button>
-
-<div id="presetList" class="historyList"></div>
-
-</div>
-
-</div>
-
-<button onclick="clearSession()">CLEAR CURRENT SESSION</button>
-<p class="note">Clearing the current session does not delete saved ledger records.</p>
-</div>
-<a href="https://www.amazon.co.uk/" target="_blank" rel="noopener">SHOPPING<small>Research and selection first. Purchase remains manually authorised.</small></a>
-<a href="https://chatgpt.com/" target="_blank" rel="noopener">ASCENSION VISOR<small>Project entry point. Dedicated workspace integration comes later.</small></a>
-<a href="https://keep.google.com/" target="_blank" rel="noopener">NOTES<small>Capture intentions, evidence, checkpoints and confirmations.</small></a>
-<a href="#" onclick="systemStatus();return false;">SYSTEM STATUS<small>Check the hub, loop state and local ledger count.</small></a>
-<div class="locked">PAYMENTS — LOCKED<small>No financial action can execute from this hub yet.</small></div>
-<div class="rule"><b>AI proposes.</b> Rules constrain. You authorise.<br>External systems execute. <b>Malkuth verifies.</b></div>
-<div class="footer">v3.0 EXPERIMENTAL • v2.9 stable checkpoint</div>
-</main>
+<script>
+function openIntent(mode){
+ document.getElementById('modal').classList.add('open');
+ document.getElementById('mode').textContent = mode==='Intention' ? 'WHAT DO YOU WANT TO HAPPEN?' : mode.toUpperCase();
+ setTimeout(()=>document.getElementById('intentText').focus(),100);
+}
+function closeIntent(){document.getElementById('modal').classList.remove('open')}
+function execute(){
+ const t=document.getElementById('intentText').value.trim();
+ if(!t){document.getElementById('intentText').focus();return}
+ const protocol=`MALKUTH v3.1 ORCHESTRATION\n\nINTENTION: ${t}\n\nResolve the smallest capability needed. Apply the mandate layer. Execute any useful authorised external action available. Ask only at a genuine boundary. Return evidence and verification. Preserve what is learned.`;
+ navigator.clipboard?.writeText(protocol).catch(()=>{});
+ window.open('https://chatgpt.com/','_blank');
+}
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeIntent()})
+</script>
 </body>
 </html>
