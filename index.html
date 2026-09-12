@@ -42,21 +42,19 @@ button.primary{background-image:linear-gradient(rgba(31,21,7,.72),rgba(5,5,3,.88
  .dashboard{width:100vw}
  .intent{left:42%;width:22%}
  .create,.retrieve,.act,.verify,.explore{left:42%;width:22%}
- .mobile-tray{position:relative;display:block;width:100%;padding:18px max(12px,env(safe-area-inset-right)) max(14px,env(safe-area-inset-bottom)) max(12px,env(safe-area-inset-left));overflow:hidden;background:linear-gradient(rgba(9,7,3,.68),rgba(1,2,2,.82)),url("malkuth-tarot-control-overlay.png") left center/cover no-repeat,#050403;border-top:2px solid #b78b39;line-height:1.25;box-shadow:inset 0 12px 28px rgba(0,0,0,.72);background-blend-mode:normal,luminosity}
- .mobile-tray::before{content:"◆  MALKUTH  ◆";display:block;margin:-5px auto 11px;text-align:center;color:#c89b48;font:12px Georgia,serif;letter-spacing:.28em;text-shadow:0 0 12px rgba(218,163,67,.45)}
- .mobile-tray::after{content:"";position:absolute;pointer-events:none;inset:8px;border:1px solid rgba(166,122,47,.28);clip-path:polygon(0 0,32% 0,35% 1px,65% 1px,68% 0,100% 0,100% 100%,0 100%)}
- .mobile-intent{position:relative;z-index:1;width:100%;min-height:54px;border:2px solid #c99b47;border-radius:5px;background:linear-gradient(rgba(18,13,5,.78),rgba(2,3,3,.9)),url("malkuth-tarot-control-overlay.png") 47% center/340% auto no-repeat;color:#f1dfaa;font-family:Georgia,serif;font-weight:700;letter-spacing:.06em;text-shadow:0 1px 4px #000;box-shadow:inset 3px 0 #d0a04a,inset 0 0 18px rgba(196,144,52,.12);background-blend-mode:normal,luminosity}
- .mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
- .mobile-action{position:relative;z-index:1;min-height:58px;padding:9px 10px 9px 14px;border:2px solid #9b7530;border-radius:4px;background-image:linear-gradient(100deg,rgba(5,5,3,.9) 0%,rgba(10,7,3,.7) 55%,rgba(2,3,3,.9) 100%),url("malkuth-tarot-control-overlay.png");background-size:cover,520% auto;background-repeat:no-repeat;background-blend-mode:normal,luminosity;color:#f4dfa3;text-align:left;font-family:Georgia,serif;font-weight:700;letter-spacing:.06em;text-shadow:0 1px 4px #000;box-shadow:inset 4px 0 #c0923e,inset 0 0 15px rgba(173,124,39,.12)}
- .mobile-action:nth-child(1){background-position:center,34% center}
- .mobile-action:nth-child(2){background-position:center,10% center}
- .mobile-action:nth-child(3){background-position:center,48% center}
- .mobile-action:nth-child(4){background-position:center,60% center}
- .mobile-action:nth-child(5){background-position:center,88% center}
- .mobile-action:active,.mobile-intent:active{border-color:#e4b95f;filter:brightness(1.22);box-shadow:inset 3px 0 #e8bd61,0 0 14px rgba(37,147,218,.3)}
- .mobile-action small{display:block;margin-top:2px;color:#c8b98e;font-size:10px;font-weight:400;text-shadow:0 1px 3px #000}
- .mobile-action:last-child{grid-column:1/-1}
- .mobile-flow{position:relative;z-index:1;margin-top:12px;padding-top:9px;border-top:1px solid rgba(156,116,44,.35);text-align:center;color:#b98b3d;font-size:9px;letter-spacing:.11em}
+ .mobile-tray{position:relative;display:block;width:100%;overflow:hidden;background:#030303;border-top:2px solid #b78b39;line-height:1.25;box-shadow:inset 0 12px 28px rgba(0,0,0,.72)}
+ .mobile-intent{display:block;width:calc(100% - 24px);min-height:58px;margin:14px 12px 10px;border:0;border-bottom:1px solid #8f682b;background:transparent;color:#f3dda0;font:700 17px Georgia,serif;letter-spacing:.06em;text-shadow:0 1px 4px #000}
+ .sacred-flow{position:relative;width:100%;aspect-ratio:2/3;background:url("malkuth-sacred-flow-controls.png") center/100% 100% no-repeat}
+ .mobile-actions{position:absolute;inset:0}
+ .mobile-action{position:absolute;left:31%;width:62%;height:13%;padding:0 7% 0 8%;border:0;background:transparent;color:#f6e4ac;text-align:center;font:700 clamp(17px,5.4vw,27px) Georgia,serif;letter-spacing:.09em;text-shadow:0 2px 5px #000,0 0 12px rgba(225,169,62,.3)}
+ .mobile-action:nth-child(1){top:5%}
+ .mobile-action:nth-child(2){top:24%}
+ .mobile-action:nth-child(3){top:43%}
+ .mobile-action:nth-child(4){top:62%}
+ .mobile-action:nth-child(5){top:81%}
+ .mobile-action:active,.mobile-intent:active{color:#fff1bd;filter:brightness(1.28);text-shadow:0 0 12px #e0aa45}
+ .mobile-action small{display:block;margin-top:4px;color:#cdbb8c;font:400 clamp(9px,2.8vw,13px) Georgia,serif;letter-spacing:.04em;text-shadow:0 1px 3px #000}
+ .mobile-flow{padding:10px 8px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(156,116,44,.35);text-align:center;color:#b98b3d;font-size:9px;letter-spacing:.11em;background:#030303}
 }
 </style>
 </head>
@@ -73,12 +71,14 @@ button.primary{background-image:linear-gradient(rgba(31,21,7,.72),rgba(5,5,3,.88
  </main>
  <nav class="mobile-tray" aria-label="Malkuth mobile controls">
   <button class="mobile-intent" onclick="openIntent('Intention')">WHAT DO YOU WANT TO HAPPEN?</button>
-  <div class="mobile-actions">
-   <button class="mobile-action" onclick="openIntent('Create')">CREATE<small>Make an intention</small></button>
-   <button class="mobile-action" onclick="openIntent('Retrieve')">RETRIEVE<small>Access and review</small></button>
-   <button class="mobile-action" onclick="openIntent('Act')">ACT<small>Execute and automate</small></button>
-   <button class="mobile-action" onclick="openIntent('Verify')">VERIFY<small>Confirm and record</small></button>
-   <button class="mobile-action" onclick="openIntent('Explore')">EXPLORE<small>Learn and expand</small></button>
+  <div class="sacred-flow">
+   <div class="mobile-actions">
+    <button class="mobile-action" onclick="openIntent('Create')">CREATE<small>Direct capability</small></button>
+    <button class="mobile-action" onclick="openIntent('Retrieve')">RETRIEVE<small>Reveal and understand</small></button>
+    <button class="mobile-action" onclick="openIntent('Act')">ACT<small>Cross the threshold</small></button>
+    <button class="mobile-action" onclick="openIntent('Verify')">VERIFY<small>Give action structure</small></button>
+    <button class="mobile-action" onclick="openIntent('Explore')">EXPLORE<small>Open the next horizon</small></button>
+   </div>
   </div>
   <div class="mobile-flow">INTENTION → ACTION → RESULT → VERIFIED</div>
  </nav>
