@@ -45,9 +45,14 @@ button.primary{background:linear-gradient(135deg,#8d6a2a,#d1ad54);color:#0b0b09}
  .mobile-tray::after{content:"";position:absolute;pointer-events:none;inset:8px;border:1px solid rgba(166,122,47,.28);clip-path:polygon(0 0,32% 0,35% 1px,65% 1px,68% 0,100% 0,100% 100%,0 100%)}
  .mobile-intent{position:relative;z-index:1;width:100%;min-height:50px;border:1px solid #c99b47;border-radius:5px;background:linear-gradient(135deg,rgba(63,45,18,.7),rgba(8,12,13,.94));color:#f1dfaa;font-family:Georgia,serif;font-weight:700;letter-spacing:.06em;box-shadow:inset 0 0 18px rgba(196,144,52,.08),0 0 16px rgba(21,112,180,.08)}
  .mobile-actions{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:9px}
- .mobile-action{position:relative;z-index:1;min-height:49px;padding:8px 10px 8px 14px;border:1px solid #765a29;border-radius:4px;background:linear-gradient(110deg,rgba(16,17,14,.98),rgba(8,20,29,.92));color:#ead79d;text-align:left;font-family:Georgia,serif;font-weight:700;letter-spacing:.05em;box-shadow:inset 3px 0 #b88938,inset 0 0 12px rgba(14,89,140,.08)}
- .mobile-action:active,.mobile-intent:active{border-color:#e4b95f;background:linear-gradient(110deg,rgba(44,33,14,.98),rgba(8,34,51,.96));box-shadow:inset 3px 0 #e8bd61,0 0 14px rgba(37,147,218,.25)}
- .mobile-action small{display:block;margin-top:2px;color:#8f897d;font-size:10px;font-weight:400}
+ .mobile-action{position:relative;z-index:1;min-height:55px;padding:9px 10px 9px 14px;border:1px solid #8b692e;border-radius:4px;background-image:linear-gradient(100deg,rgba(3,5,5,.96) 0%,rgba(4,8,10,.78) 55%,rgba(3,5,5,.9) 100%),url("malkuth-tarot-control-overlay.png");background-size:cover,520% auto;background-repeat:no-repeat;color:#f4dfa3;text-align:left;font-family:Georgia,serif;font-weight:700;letter-spacing:.06em;text-shadow:0 1px 4px #000;box-shadow:inset 3px 0 #c0923e,inset 0 0 15px rgba(16,107,166,.12)}
+ .mobile-action:nth-child(1){background-position:center,34% center}
+ .mobile-action:nth-child(2){background-position:center,10% center}
+ .mobile-action:nth-child(3){background-position:center,48% center}
+ .mobile-action:nth-child(4){background-position:center,60% center}
+ .mobile-action:nth-child(5){background-position:center,88% center}
+ .mobile-action:active,.mobile-intent:active{border-color:#e4b95f;filter:brightness(1.22);box-shadow:inset 3px 0 #e8bd61,0 0 14px rgba(37,147,218,.3)}
+ .mobile-action small{display:block;margin-top:2px;color:#c8b98e;font-size:10px;font-weight:400;text-shadow:0 1px 3px #000}
  .mobile-action:last-child{grid-column:1/-1}
  .mobile-flow{position:relative;z-index:1;margin-top:12px;padding-top:9px;border-top:1px solid rgba(156,116,44,.35);text-align:center;color:#b98b3d;font-size:9px;letter-spacing:.11em}
 }
