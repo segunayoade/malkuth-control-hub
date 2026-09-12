@@ -6,6 +6,7 @@
 <meta name="theme-color" content="#000000">
 <title>Malkuth Control Hub v3.1</title>
 <style>
+@import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&family=Marcellus+SC&display=swap');
 *{box-sizing:border-box}
 html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;min-height:100%;overflow:hidden}
 .stage{position:relative;isolation:isolate;min-height:100vh;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:#000}
@@ -27,13 +28,16 @@ html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;mi
 .card{position:relative;width:min(640px,100%);overflow:hidden;background:linear-gradient(145deg,rgba(20,16,8,.92),rgba(2,3,3,.97)),url("malkuth-tarot-control-overlay.png") left center/auto 100% no-repeat;border:2px solid #b98a38;border-radius:6px;padding:22px;box-shadow:0 24px 80px #000,inset 0 0 28px rgba(184,132,42,.12);background-blend-mode:normal,luminosity}
 .card::before{content:"◆";position:absolute;top:6px;left:9px;color:#b98a38;font-size:11px}
 .card::after{content:"◆";position:absolute;right:9px;bottom:6px;color:#b98a38;font-size:11px}
-.eyebrow{font-size:10px;letter-spacing:.3em;color:#9f8248}
-h1{font:400 30px Georgia,serif;letter-spacing:.04em;margin:8px 0 6px;color:#ead79d}
-p{color:#aaa393;font-size:13px}
-textarea{width:100%;min-height:120px;background:linear-gradient(rgba(1,2,2,.9),rgba(1,2,2,.94)),url("malkuth-tarot-control-overlay.png") 48% center/420% auto no-repeat;color:#f5ebcf;border:1px solid #b28637;border-radius:5px;padding:14px;font:15px Arial;resize:vertical;background-blend-mode:normal,luminosity;box-shadow:inset 3px 0 #b88938}
+.eyebrow{font:400 10px "Marcellus SC",Georgia,serif;letter-spacing:.3em;color:#b08b49}
+h1{font:700 34px "Cinzel",Georgia,serif;letter-spacing:.045em;margin:8px 0 6px;background:url("malkuth-sacred-flow-controls.png") 48% 14%/260% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.35px #f3cf78;filter:drop-shadow(0 1px 2px #000) drop-shadow(0 0 5px rgba(209,151,48,.25))}
+p{color:#c3bba9;font:500 15px/1.48 "Cormorant Garamond",Georgia,serif}
+textarea{width:100%;min-height:150px;background:linear-gradient(90deg,rgba(1,2,2,.52),rgba(1,2,2,.83)),url("malkuth-sacred-flow-controls.png") 17% 30%/175% auto no-repeat;color:#f5ebcf;border:1px solid #c79842;border-radius:28px 8px 28px 8px;padding:18px 22px;font:500 17px/1.35 "Cormorant Garamond",Georgia,serif;resize:vertical;background-blend-mode:normal,luminosity;box-shadow:inset 0 0 0 2px rgba(2,2,1,.8),inset 0 0 28px rgba(184,132,42,.12),0 0 12px rgba(192,139,44,.12)}
+textarea::placeholder{color:#c7bfae;opacity:.72}
 .row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-button.action{padding:13px;border-radius:5px;border:1px solid #a27b33;background:linear-gradient(rgba(4,5,4,.78),rgba(4,5,4,.9)),url("malkuth-tarot-control-overlay.png") 68% center/360% auto no-repeat;color:#ead79d;font-weight:700;text-shadow:0 1px 3px #000;background-blend-mode:normal,luminosity;box-shadow:inset 3px 0 #b88938}
-button.primary{background-image:linear-gradient(rgba(31,21,7,.72),rgba(5,5,3,.88)),url("malkuth-tarot-control-overlay.png");background-position:center,46% center;background-size:cover,360% auto;color:#f6e3aa}
+button.action{position:relative;overflow:hidden;padding:16px 11px;border-radius:22px 6px 22px 6px;border:1px solid #bd8f3a;background:linear-gradient(rgba(2,3,3,.48),rgba(2,3,3,.72)),url("malkuth-sacred-flow-controls.png") 78% 88%/235% auto no-repeat;background-blend-mode:normal,luminosity;box-shadow:inset 0 0 0 2px rgba(2,2,1,.78),inset 0 0 19px rgba(197,143,47,.14)}
+button.action span{display:block;font:700 14px/1.15 "Cinzel",Georgia,serif;letter-spacing:.015em;background:url("malkuth-sacred-flow-controls.png") 38% 11%/260% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.25px #f3d580;filter:drop-shadow(0 1px 2px #000)}
+button.primary{background-image:linear-gradient(rgba(25,16,5,.42),rgba(2,3,3,.75)),url("malkuth-sacred-flow-controls.png");background-position:center,15% 8%;background-size:cover,235% auto}
+button.action:active{filter:brightness(1.22);border-color:#edc66f}
 .status{margin-top:13px;padding-top:12px;border-top:1px solid #3f3520;color:#8f897d;font-size:11px;letter-spacing:.06em}
 @media(max-width:700px){
  html,body{overflow:auto}
@@ -91,8 +95,8 @@ button.primary{background-image:linear-gradient(rgba(31,21,7,.72),rgba(5,5,3,.88
   <p>State the outcome once. Malkuth resolves the route beneath the visual interface.</p>
   <textarea id="intentText" placeholder="Tell Malkuth what you want to happen."></textarea>
   <div class="row">
-   <button class="action primary" onclick="execute()">EXECUTE THROUGH CHATGPT</button>
-   <button class="action" onclick="closeIntent()">RETURN TO HUB</button>
+   <button class="action primary" onclick="execute()"><span>EXECUTE THROUGH CHATGPT</span></button>
+   <button class="action" onclick="closeIntent()"><span>RETURN TO HUB</span></button>
   </div>
   <div class="status">INTENTION → RESOLVE → MANDATE → EXECUTE → VERIFY → LEARN</div>
  </section>
