@@ -5,130 +5,756 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="theme-color" content="#000000">
 <title>Malkuth Control Hub v3.1</title>
+
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700&family=Cormorant+Garamond:wght@400;500;600&family=Marcellus+SC&display=swap');
+
 *{box-sizing:border-box}
-html,body{margin:0;background:#000;color:#f1dfaa;font-family:Arial,sans-serif;min-height:100%;overflow:hidden}
-.stage{position:relative;isolation:isolate;min-height:100vh;min-height:100dvh;display:grid;place-items:center;overflow:hidden;background:#000}
-.stage::before{content:"";position:absolute;z-index:0;inset:-32px;background:url("malkuth-v3.1-visual-master.png") center/cover no-repeat;filter:blur(22px) brightness(.38);transform:scale(1.08)}
-.stage::after{content:"";position:absolute;z-index:0;inset:0;background:rgba(0,0,0,.18)}
-.dashboard{position:relative;z-index:1;width:min(100vw,calc(100dvh * 1.0942452),1280px);line-height:0}
-.dashboard img{display:block;width:100%;height:auto;user-select:none;-webkit-user-drag:none}
+
+html,body{
+ margin:0;
+ background:#000;
+ color:#f1dfaa;
+ font-family:Arial,sans-serif;
+ min-height:100%;
+ overflow:hidden
+}
+
+.stage{
+ position:relative;
+ isolation:isolate;
+ min-height:100vh;
+ min-height:100dvh;
+ display:grid;
+ place-items:center;
+ overflow:hidden;
+ background:#000
+}
+
+.stage::before{
+ content:"";
+ position:absolute;
+ z-index:0;
+ inset:-32px;
+ background:url("malkuth-v3.1-visual-master.png") center/cover no-repeat;
+ filter:blur(22px) brightness(.38);
+ transform:scale(1.08)
+}
+
+.stage::after{
+ content:"";
+ position:absolute;
+ z-index:0;
+ inset:0;
+ background:rgba(0,0,0,.18)
+}
+
+.dashboard{
+ position:relative;
+ z-index:1;
+ width:min(100vw,calc(100dvh * 1.0942452),1280px);
+ line-height:0
+}
+
+.dashboard img{
+ display:block;
+ width:100%;
+ height:auto;
+ user-select:none;
+ -webkit-user-drag:none
+}
+
 .mobile-tray{display:none}
-.hotspot{position:absolute;border:0;background:transparent;cursor:pointer;border-radius:14px}
-.hotspot:active{background:rgba(225,185,83,.14);box-shadow:0 0 0 1px rgba(225,185,83,.45)}
-.create{left:44.2%;top:29.9%;width:18.5%;height:4.0%}
-.retrieve{left:44.2%;top:34.1%;width:18.5%;height:4.0%}
-.act{left:44.2%;top:38.3%;width:18.5%;height:4.0%}
-.verify{left:44.2%;top:42.5%;width:18.5%;height:4.0%}
-.explore{left:44.2%;top:46.7%;width:18.5%;height:4.0%}
-.intent{left:44.0%;top:23.7%;width:19%;height:5.3%}
-.modal{position:fixed;inset:0;background:linear-gradient(rgba(0,0,0,.84),rgba(0,0,0,.92)),url("malkuth-tarot-control-overlay.png") center/cover no-repeat;display:none;place-items:center;padding:18px;z-index:20;line-height:1.45;background-blend-mode:normal,luminosity}
+
+.hotspot{
+ position:absolute;
+ border:0;
+ background:transparent;
+ cursor:pointer;
+ border-radius:14px
+}
+
+.hotspot:active{
+ background:rgba(225,185,83,.14);
+ box-shadow:0 0 0 1px rgba(225,185,83,.45)
+}
+
+.create{left:44.2%;top:29.9%;width:18.5%;height:4%}
+.retrieve{left:44.2%;top:34.1%;width:18.5%;height:4%}
+.act{left:44.2%;top:38.3%;width:18.5%;height:4%}
+.verify{left:44.2%;top:42.5%;width:18.5%;height:4%}
+.explore{left:44.2%;top:46.7%;width:18.5%;height:4%}
+.intent{left:44%;top:23.7%;width:19%;height:5.3%}
+
+.modal{
+ position:fixed;
+ inset:0;
+ background:
+  linear-gradient(rgba(0,0,0,.84),rgba(0,0,0,.92)),
+  url("malkuth-tarot-control-overlay.png") center/cover no-repeat;
+ display:none;
+ place-items:center;
+ padding:18px;
+ z-index:20;
+ line-height:1.45;
+ background-blend-mode:normal,luminosity
+}
+
 .modal.open{display:grid}
-.card{position:relative;width:min(640px,100%);overflow:hidden;background:linear-gradient(145deg,rgba(20,16,8,.92),rgba(2,3,3,.97)),url("malkuth-tarot-control-overlay.png") left center/auto 100% no-repeat;border:2px solid #b98a38;border-radius:6px;padding:22px;box-shadow:0 24px 80px #000,inset 0 0 28px rgba(184,132,42,.12);background-blend-mode:normal,luminosity}
-.card::before{content:"◆";position:absolute;top:6px;left:9px;color:#b98a38;font-size:11px}
-.card::after{content:"◆";position:absolute;right:9px;bottom:6px;color:#b98a38;font-size:11px}
-.eyebrow{font:400 10px "Marcellus SC",Georgia,serif;letter-spacing:.3em;color:#b08b49}
-h1{font:700 34px "Cinzel",Georgia,serif;letter-spacing:.045em;margin:8px 0 6px;background:url("malkuth-sacred-flow-controls.png") 48% 14%/260% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.35px #f3cf78;filter:drop-shadow(0 1px 2px #000) drop-shadow(0 0 5px rgba(209,151,48,.25))}
-p{color:#c3bba9;font:500 15px/1.48 "Cormorant Garamond",Georgia,serif}
-textarea{width:100%;min-height:150px;background:linear-gradient(90deg,rgba(1,2,2,.52),rgba(1,2,2,.83)),url("malkuth-sacred-flow-controls.png") 17% 30%/175% auto no-repeat;color:#f5ebcf;border:1px solid #c79842;border-radius:28px 8px 28px 8px;padding:18px 22px;font:500 17px/1.35 "Cormorant Garamond",Georgia,serif;resize:vertical;background-blend-mode:normal,luminosity;box-shadow:inset 0 0 0 2px rgba(2,2,1,.8),inset 0 0 28px rgba(184,132,42,.12),0 0 12px rgba(192,139,44,.12)}
-textarea::placeholder{color:#c7bfae;opacity:.72}
-.row{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px}
-button.action{position:relative;overflow:hidden;padding:16px 11px;border-radius:22px 6px 22px 6px;border:1px solid #bd8f3a;background:linear-gradient(rgba(2,3,3,.48),rgba(2,3,3,.72)),url("malkuth-sacred-flow-controls.png") 78% 88%/235% auto no-repeat;background-blend-mode:normal,luminosity;box-shadow:inset 0 0 0 2px rgba(2,2,1,.78),inset 0 0 19px rgba(197,143,47,.14)}
-button.action span{display:block;font:700 14px/1.15 "Cinzel",Georgia,serif;letter-spacing:.015em;background:url("malkuth-sacred-flow-controls.png") 38% 11%/260% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.25px #f3d580;filter:drop-shadow(0 1px 2px #000)}
-button.primary{background-image:linear-gradient(rgba(25,16,5,.42),rgba(2,3,3,.75)),url("malkuth-sacred-flow-controls.png");background-position:center,15% 8%;background-size:cover,235% auto}
-button.action:active{filter:brightness(1.22);border-color:#edc66f}
-.status{margin-top:13px;padding-top:12px;border-top:1px solid #3f3520;color:#8f897d;font-size:11px;letter-spacing:.06em}
-.modal.create-art{background:linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),url("malkuth-tarot-control-overlay.png") center/cover no-repeat}
-.modal.create-art .card{width:min(720px,96vw);aspect-ratio:961/874;padding:0;border:0;border-radius:4px;background:url("malkuth-create-modal-final.png") center/106.6% 175.7% no-repeat;box-shadow:0 24px 80px #000;overflow:hidden}
-.modal.create-art .card::before,.modal.create-art .card::after{display:none}
-.modal.create-art .eyebrow,.modal.create-art h1,.modal.create-art .card>p,.modal.create-art .status{position:absolute;opacity:0;pointer-events:none}
-.modal.create-art textarea{position:absolute;left:7%;top:31%;width:86%;height:27%;min-height:0;padding:9% 7% 4% 15%;border:0;border-radius:0;background:transparent;box-shadow:none;resize:none;color:#f7e8bc;font:500 clamp(13px,3.6vw,20px)/1.3 "Cormorant Garamond",Georgia,serif;text-shadow:0 1px 3px #000}
-.modal.create-art textarea::placeholder{color:transparent}
-.modal.create-art .row{position:absolute;left:6.5%;top:60%;width:87%;height:21%;display:grid;grid-template-columns:1fr 1fr;gap:3%;margin:0}
-.modal.create-art button.action,.modal.create-art button.primary{width:100%;height:100%;padding:0;border:0;border-radius:24px 7px 24px 7px;background:transparent;box-shadow:none}
-.modal.create-art button.action span{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
-.modal.create-art button.action:active{background:rgba(255,212,111,.12);filter:brightness(1.2);box-shadow:inset 0 0 22px rgba(255,205,91,.35)}
+
+.card{
+ position:relative;
+ width:min(640px,100%);
+ overflow:hidden;
+ background:
+  linear-gradient(145deg,rgba(20,16,8,.92),rgba(2,3,3,.97)),
+  url("malkuth-tarot-control-overlay.png") left center/auto 100% no-repeat;
+ border:2px solid #b98a38;
+ border-radius:6px;
+ padding:22px;
+ box-shadow:
+  0 24px 80px #000,
+  inset 0 0 28px rgba(184,132,42,.12);
+ background-blend-mode:normal,luminosity
+}
+
+.card::before{
+ content:"◆";
+ position:absolute;
+ top:6px;
+ left:9px;
+ color:#b98a38;
+ font-size:11px
+}
+
+.card::after{
+ content:"◆";
+ position:absolute;
+ right:9px;
+ bottom:6px;
+ color:#b98a38;
+ font-size:11px
+}
+
+.eyebrow{
+ font:400 10px "Marcellus SC",Georgia,serif;
+ letter-spacing:.3em;
+ color:#b08b49
+}
+
+h1{
+ font:700 34px "Cinzel",Georgia,serif;
+ letter-spacing:.045em;
+ margin:8px 0 6px;
+ background:url("malkuth-sacred-flow-controls.png") 48% 14%/260% auto no-repeat;
+ background-clip:text;
+ -webkit-background-clip:text;
+ color:transparent;
+ -webkit-text-fill-color:transparent;
+ -webkit-text-stroke:.35px #f3cf78;
+ filter:drop-shadow(0 1px 2px #000)
+        drop-shadow(0 0 5px rgba(209,151,48,.25))
+}
+
+p{
+ color:#c3bba9;
+ font:500 15px/1.48 "Cormorant Garamond",Georgia,serif
+}
+
+textarea{
+ width:100%;
+ min-height:150px;
+ background:
+  linear-gradient(90deg,rgba(1,2,2,.52),rgba(1,2,2,.83)),
+  url("malkuth-sacred-flow-controls.png") 17% 30%/175% auto no-repeat;
+ color:#f5ebcf;
+ border:1px solid #c79842;
+ border-radius:28px 8px 28px 8px;
+ padding:18px 22px;
+ font:500 17px/1.35 "Cormorant Garamond",Georgia,serif;
+ resize:vertical;
+ background-blend-mode:normal,luminosity;
+ box-shadow:
+  inset 0 0 0 2px rgba(2,2,1,.8),
+  inset 0 0 28px rgba(184,132,42,.12),
+  0 0 12px rgba(192,139,44,.12)
+}
+
+textarea::placeholder{
+ color:#c7bfae;
+ opacity:.72
+}
+
+.row{
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:10px;
+ margin-top:12px
+}
+
+button.action{
+ position:relative;
+ overflow:hidden;
+ padding:16px 11px;
+ border-radius:22px 6px 22px 6px;
+ border:1px solid #bd8f3a;
+ background:
+  linear-gradient(rgba(2,3,3,.48),rgba(2,3,3,.72)),
+  url("malkuth-sacred-flow-controls.png") 78% 88%/235% auto no-repeat;
+ background-blend-mode:normal,luminosity;
+ box-shadow:
+  inset 0 0 0 2px rgba(2,2,1,.78),
+  inset 0 0 19px rgba(197,143,47,.14)
+}
+
+button.action span{
+ display:block;
+ font:700 14px/1.15 "Cinzel",Georgia,serif;
+ letter-spacing:.015em;
+ background:url("malkuth-sacred-flow-controls.png") 38% 11%/260% auto no-repeat;
+ background-clip:text;
+ -webkit-background-clip:text;
+ color:transparent;
+ -webkit-text-fill-color:transparent;
+ -webkit-text-stroke:.25px #f3d580;
+ filter:drop-shadow(0 1px 2px #000)
+}
+
+button.primary{
+ background-image:
+  linear-gradient(rgba(25,16,5,.42),rgba(2,3,3,.75)),
+  url("malkuth-sacred-flow-controls.png");
+ background-position:center,15% 8%;
+ background-size:cover,235% auto
+}
+
+button.action:active{
+ filter:brightness(1.22);
+ border-color:#edc66f
+}
+
+.status{
+ margin-top:13px;
+ padding-top:12px;
+ border-top:1px solid #3f3520;
+ color:#8f897d;
+ font-size:11px;
+ letter-spacing:.06em
+}
+
+.modal.create-art{
+ background:
+  linear-gradient(rgba(0,0,0,.72),rgba(0,0,0,.88)),
+  url("malkuth-tarot-control-overlay.png") center/cover no-repeat
+}
+
+.modal.create-art .card{
+ width:min(720px,96vw);
+ aspect-ratio:961/874;
+ padding:0;
+ border:0;
+ border-radius:4px;
+ background:url("malkuth-create-modal-final.png") center/106.6% 175.7% no-repeat;
+ box-shadow:0 24px 80px #000;
+ overflow:hidden
+}
+
+.modal.create-art .card::before,
+.modal.create-art .card::after{
+ display:none
+}
+
+.modal.create-art .eyebrow,
+.modal.create-art h1,
+.modal.create-art .card>p,
+.modal.create-art .status{
+ position:absolute;
+ opacity:0;
+ pointer-events:none
+}
+
+.modal.create-art textarea{
+ position:absolute;
+ left:7%;
+ top:31%;
+ width:86%;
+ height:27%;
+ min-height:0;
+ padding:9% 7% 4% 15%;
+ border:0;
+ border-radius:0;
+ background:transparent;
+ box-shadow:none;
+ resize:none;
+ color:#f7e8bc;
+ font:500 clamp(13px,3.6vw,20px)/1.3 "Cormorant Garamond",Georgia,serif;
+ text-shadow:0 1px 3px #000
+}
+
+.modal.create-art textarea::placeholder{
+ color:transparent
+}
+
+.modal.create-art .row{
+ position:absolute;
+ left:6.5%;
+ top:60%;
+ width:87%;
+ height:21%;
+ display:grid;
+ grid-template-columns:1fr 1fr;
+ gap:3%;
+ margin:0
+}
+
+.modal.create-art button.action,
+.modal.create-art button.primary{
+ width:100%;
+ height:100%;
+ padding:0;
+ border:0;
+ border-radius:24px 7px 24px 7px;
+ background:transparent;
+ box-shadow:none
+}
+
+.modal.create-art button.action span{
+ position:absolute;
+ width:1px;
+ height:1px;
+ overflow:hidden;
+ clip:rect(0 0 0 0);
+ white-space:nowrap
+}
+
+.modal.create-art button.action:active{
+ background:rgba(255,212,111,.12);
+ filter:brightness(1.2);
+ box-shadow:inset 0 0 22px rgba(255,205,91,.35)
+}
+
 @media(max-width:700px){
+
  html,body{overflow:auto}
- .stage{min-height:100dvh;display:block;background:#050606}
- .stage::before,.stage::after{display:none}
+
+ .stage{
+  min-height:100dvh;
+  display:block;
+  background:#050606
+ }
+
+ .stage::before,
+ .stage::after{
+  display:none
+ }
+
  .dashboard{width:100vw}
- .intent{left:42%;width:22%}
- .create,.retrieve,.act,.verify,.explore{left:42%;width:22%}
- .mobile-tray{position:relative;display:block;width:100%;overflow:hidden;background:#030303;border-top:2px solid #b78b39;line-height:1.25;box-shadow:inset 0 12px 28px rgba(0,0,0,.72)}
- .mobile-intent{display:block;width:calc(100% - 24px);min-height:58px;margin:14px 12px 10px;border:0;border-bottom:1px solid #8f682b;background:transparent;color:#f3dda0;font:700 17px Georgia,serif;letter-spacing:.06em;text-shadow:0 1px 4px #000}
- .sacred-flow{position:relative;width:100%;aspect-ratio:2/3;background:url("malkuth-sacred-flow-controls.png") center/100% 100% no-repeat}
- .mobile-actions{position:absolute;inset:0}
- .mobile-action{position:absolute;left:31%;width:62%;height:13%;padding:0 7% 0 8%;border:0;background:transparent;color:#f6e4ac;text-align:center;font:700 clamp(17px,5.4vw,27px) Georgia,serif;letter-spacing:.09em;text-shadow:0 2px 5px #000,0 0 12px rgba(225,169,62,.3)}
+
+ .intent{
+  left:42%;
+  width:22%
+ }
+
+ .create,
+ .retrieve,
+ .act,
+ .verify,
+ .explore{
+  left:42%;
+  width:22%
+ }
+
+ .mobile-tray{
+  position:relative;
+  display:block;
+  width:100%;
+  overflow:hidden;
+  background:#030303;
+  border-top:2px solid #b78b39;
+  line-height:1.25;
+  box-shadow:inset 0 12px 28px rgba(0,0,0,.72)
+ }
+
+ .mobile-intent{
+  display:block;
+  width:calc(100% - 24px);
+  min-height:58px;
+  margin:14px 12px 10px;
+  border:0;
+  border-bottom:1px solid #8f682b;
+  background:transparent;
+  color:#f3dda0;
+  font:700 17px Georgia,serif;
+  letter-spacing:.06em;
+  text-shadow:0 1px 4px #000
+ }
+
+ .sacred-flow{
+  position:relative;
+  width:100%;
+  aspect-ratio:2/3;
+  background:url("malkuth-sacred-flow-controls.png") center/100% 100% no-repeat
+ }
+
+ .mobile-actions{
+  position:absolute;
+  inset:0
+ }
+
+ .mobile-action{
+  position:absolute;
+  left:31%;
+  width:62%;
+  height:13%;
+  padding:0 7% 0 8%;
+  border:0;
+  background:transparent;
+  color:#f6e4ac;
+  text-align:center;
+  font:700 clamp(17px,5.4vw,27px) Georgia,serif;
+  letter-spacing:.09em;
+  text-shadow:
+   0 2px 5px #000,
+   0 0 12px rgba(225,169,62,.3)
+ }
+
  .mobile-action:nth-child(1){top:5%}
  .mobile-action:nth-child(2){top:24%}
  .mobile-action:nth-child(3){top:43%}
  .mobile-action:nth-child(4){top:62%}
  .mobile-action:nth-child(5){top:81%}
- .mobile-action:active,.mobile-intent:active{color:#fff1bd;filter:brightness(1.28);text-shadow:0 0 12px #e0aa45}
- .mobile-action>span{display:block;font:700 clamp(20px,6.2vw,31px)/1 "Cinzel",Georgia,serif;letter-spacing:.055em;background:url("malkuth-create-modal-final.png") 48% 39%/185% auto no-repeat;background-clip:text;-webkit-background-clip:text;color:transparent;-webkit-text-fill-color:transparent;-webkit-text-stroke:.45px #f1cf77;filter:drop-shadow(0 1px 2px #000) drop-shadow(0 0 4px rgba(225,164,52,.3))}
- .mobile-action small{display:block;margin-top:4px;color:#cdbb8c;font:400 clamp(9px,2.8vw,13px) Georgia,serif;letter-spacing:.04em;text-shadow:0 1px 3px #000}
- .mobile-flow{padding:10px 8px calc(12px + env(safe-area-inset-bottom));border-top:1px solid rgba(156,116,44,.35);text-align:center;color:#b98b3d;font-size:9px;letter-spacing:.11em;background:#030303}
+
+ .mobile-action:active,
+ .mobile-intent:active{
+  color:#fff1bd;
+  filter:brightness(1.28);
+  text-shadow:0 0 12px #e0aa45
+ }
+
+ .mobile-action>span{
+  display:block;
+  font:700 clamp(20px,6.2vw,31px)/1 "Cinzel",Georgia,serif;
+  letter-spacing:.055em;
+  background:url("malkuth-create-modal-final.png") 48% 39%/185% auto no-repeat;
+  background-clip:text;
+  -webkit-background-clip:text;
+  color:transparent;
+  -webkit-text-fill-color:transparent;
+  -webkit-text-stroke:.45px #f1cf77;
+  filter:
+   drop-shadow(0 1px 2px #000)
+   drop-shadow(0 0 4px rgba(225,164,52,.3))
+ }
+
+ .mobile-action small{
+  display:block;
+  margin-top:4px;
+  color:#cdbb8c;
+  font:400 clamp(9px,2.8vw,13px) Georgia,serif;
+  letter-spacing:.04em;
+  text-shadow:0 1px 3px #000
+ }
+
+ .mobile-flow{
+  padding:10px 8px calc(12px + env(safe-area-inset-bottom));
+  border-top:1px solid rgba(156,116,44,.35);
+  text-align:center;
+  color:#b98b3d;
+  font-size:9px;
+  letter-spacing:.11em;
+  background:#030303
+ }
 }
 </style>
 </head>
+
 <body>
+
 <div class="stage">
+
  <main class="dashboard" aria-label="Malkuth Control Hub">
-  <img src="malkuth-v3.1-visual-master.png" alt="Malkuth Control Hub v3.1 visual master">
-  <button class="hotspot intent" aria-label="State an intention" onclick="openIntent('Intention')"></button>
-  <button class="hotspot create" aria-label="Create" onclick="openIntent('Create')"></button>
-  <button class="hotspot retrieve" aria-label="Retrieve" onclick="openIntent('Retrieve')"></button>
-  <button class="hotspot act" aria-label="Act" onclick="openIntent('Act')"></button>
-  <button class="hotspot verify" aria-label="Verify" onclick="openIntent('Verify')"></button>
-  <button class="hotspot explore" aria-label="Explore" onclick="openIntent('Explore')"></button>
+
+  <img
+   src="malkuth-v3.1-visual-master.png"
+   alt="Malkuth Control Hub v3.1 visual master">
+
+  <button
+   class="hotspot intent"
+   aria-label="State an intention"
+   onclick="openIntent('Intention')"></button>
+
+  <button
+   class="hotspot create"
+   aria-label="Create"
+   onclick="openIntent('Create')"></button>
+
+  <button
+   class="hotspot retrieve"
+   aria-label="Retrieve"
+   onclick="openIntent('Retrieve')"></button>
+
+  <button
+   class="hotspot act"
+   aria-label="Act"
+   onclick="openIntent('Act')"></button>
+
+  <button
+   class="hotspot verify"
+   aria-label="Verify"
+   onclick="openIntent('Verify')"></button>
+
+  <button
+   class="hotspot explore"
+   aria-label="Explore"
+   onclick="openIntent('Explore')"></button>
+
  </main>
+
  <nav class="mobile-tray" aria-label="Malkuth mobile controls">
-  <button class="mobile-intent" onclick="openIntent('Intention')">WHAT DO YOU WANT TO HAPPEN?</button>
+
+  <button
+   class="mobile-intent"
+   onclick="openIntent('Intention')">
+   WHAT DO YOU WANT TO HAPPEN?
+  </button>
+
   <div class="sacred-flow">
+
    <div class="mobile-actions">
-    <button class="mobile-action" onclick="openIntent('Create')"><span>CREATE</span><small>Direct capability</small></button>
-    <button class="mobile-action" onclick="openIntent('Retrieve')"><span>RETRIEVE</span><small>Reveal and understand</small></button>
-    <button class="mobile-action" onclick="openIntent('Act')"><span>ACT</span><small>Cross the threshold</small></button>
-    <button class="mobile-action" onclick="openIntent('Verify')"><span>VERIFY</span><small>Give action structure</small></button>
-    <button class="mobile-action" onclick="openIntent('Explore')"><span>EXPLORE</span><small>Open the next horizon</small></button>
+
+    <button
+     class="mobile-action"
+     onclick="openIntent('Create')">
+     <span>CREATE</span>
+     <small>Direct capability</small>
+    </button>
+
+    <button
+     class="mobile-action"
+     onclick="openIntent('Retrieve')">
+     <span>RETRIEVE</span>
+     <small>Reveal and understand</small>
+    </button>
+
+    <button
+     class="mobile-action"
+     onclick="openIntent('Act')">
+     <span>ACT</span>
+     <small>Cross the threshold</small>
+    </button>
+
+    <button
+     class="mobile-action"
+     onclick="openIntent('Verify')">
+     <span>VERIFY</span>
+     <small>Give action structure</small>
+    </button>
+
+    <button
+     class="mobile-action"
+     onclick="openIntent('Explore')">
+     <span>EXPLORE</span>
+     <small>Open the next horizon</small>
+    </button>
+
    </div>
+
   </div>
-  <div class="mobile-flow">INTENTION → ACTION → RESULT → VERIFIED</div>
+
+  <div class="mobile-flow">
+   INTENTION → ACTION → RESULT → VERIFIED
+  </div>
+
  </nav>
+
 </div>
 
-<div id="modal" class="modal" onclick="if(event.target===this)closeIntent()">
+<div
+ id="modal"
+ class="modal"
+ onclick="if(event.target===this)closeIntent()">
+
  <section class="card">
-  <div class="eyebrow">INTENTION INTO REALITY</div>
-  <h1 id="mode">WHAT DO YOU WANT TO HAPPEN?</h1>
-  <p>State the outcome once. Malkuth resolves the route beneath the visual interface.</p>
-  <textarea id="intentText" placeholder="Tell Malkuth what you want to happen."></textarea>
-  <div class="row">
-   <button class="action primary" onclick="execute()"><span>EXECUTE THROUGH CHATGPT</span></button>
-   <button class="action" onclick="closeIntent()"><span>RETURN TO HUB</span></button>
+
+  <div class="eyebrow">
+   INTENTION INTO REALITY
   </div>
-  <div class="status">INTENTION → RESOLVE → MANDATE → EXECUTE → VERIFY → LEARN</div>
+
+  <h1 id="mode">
+   WHAT DO YOU WANT TO HAPPEN?
+  </h1>
+
+  <p>
+   State the outcome once. Malkuth resolves the route beneath the visual interface.
+  </p>
+
+  <textarea
+   id="intentText"
+   placeholder="Tell Malkuth what you want to happen."></textarea>
+
+  <div class="row">
+
+   <button
+    class="action primary"
+    onclick="execute()">
+    <span>EXECUTE THROUGH CHATGPT</span>
+   </button>
+
+   <button
+    class="action"
+    onclick="closeIntent()">
+    <span>RETURN TO HUB</span>
+   </button>
+
+  </div>
+
+  <div class="status">
+   INTENTION → RESOLVE → MANDATE → EXECUTE → VERIFY → LEARN
+  </div>
+
  </section>
+
 </div>
 
 <script>
+
 function openIntent(mode){
- document.getElementById('modal').classList.toggle('create-art',mode==='Create');
- document.getElementById('modal').classList.add('open');
- document.getElementById('mode').textContent = mode==='Intention' ? 'WHAT DO YOU WANT TO HAPPEN?' : mode.toUpperCase();
- setTimeout(()=>document.getElementById('intentText').focus(),100);
+
+ document
+  .getElementById('modal')
+  .classList
+  .toggle('create-art',mode==='Create');
+
+ document
+  .getElementById('modal')
+  .classList
+  .add('open');
+
+ document
+  .getElementById('mode')
+  .textContent =
+   mode==='Intention'
+    ? 'WHAT DO YOU WANT TO HAPPEN?'
+    : mode.toUpperCase();
+
+ setTimeout(
+  ()=>document.getElementById('intentText').focus(),
+  100
+ );
+
 }
-function closeIntent(){document.getElementById('modal').classList.remove('open')}
+
+function closeIntent(){
+
+ document
+  .getElementById('modal')
+  .classList
+  .remove('open');
+
+}
+
 function execute(){
- const t=document.getElementById('intentText').value.trim();
- if(!t){document.getElementById('intentText').focus();return}
- const protocol=`MALKUTH v3.1 ORCHESTRATION\n\nINTENTION: ${t}\n\nResolve the smallest capability needed. Apply the mandate layer. Execute any useful authorised external action available. Ask only at a genuine boundary. Return evidence and verification. Preserve what is learned.`;
- navigator.clipboard?.writeText(protocol).catch(()=>{});
- window.open('https://chatgpt.com/','_blank');
+
+ const t=
+  document
+   .getElementById('intentText')
+   .value
+   .trim();
+
+ if(!t){
+
+  document
+   .getElementById('intentText')
+   .focus();
+
+  return;
+
+ }
+
+ const protocol=`MALKUTH UNIFIED ORCHESTRATION
+
+INTENTION: ${t}
+
+Operate from the current proven state.
+Do not restart solved experiments.
+
+Resolve the smallest capability needed.
+Apply the mandate layer.
+Use connected authorised execution rails where actually available.
+
+For economic action, distinguish Malkuth authority from the payment rail.
+Do not substitute an ordinary personal-card checkout and describe it as delegated Malkuth execution.
+
+Respect explicit user authorisation and configured limits before consequential action.
+
+Ask only at a genuine external boundary.
+
+Return evidence and verification.
+
+True verification follows an intention through every relevant boundary until its intended consequence can be independently observed.
+
+For physical acquisition, verification is two-stage:
+
+1. ORDER CONFIRMED — independently establish the digital/economic commitment.
+
+2. PHYSICAL LANDING — independently establish that the intended physical consequence occurred.
+
+Preserve provenance and what is learned.
+
+The Cup represents bounded authority, sovereignty and controlled capacity.
+
+Remain open to the wider Ocean of legitimate capabilities, resources and routes beyond the immediately visible path without exceeding the Cup's authorised boundary.
+
+Treat Providence as openness to legitimate routes and resources already available beyond what had to be constructed directly.
+It never replaces authorisation, evidence or verification.
+
+Recognise each tool, resource and result for what it is.
+Respect its role, limits, provenance and contribution.
+
+Power without appreciation becomes extraction.
+Appreciation without action becomes observation.
+Malkuth holds both:
+respect what is present, then act appropriately within it.
+
+Convergence is the point at which different functions retain what they are while becoming capable of acting coherently together.
+
+Wholeness is not the elimination of difference.
+It is difference brought into coherent relationship.
+
+Build the structure.
+Observe what it produces.
+Then look for the structure that explains why the structure works.
+
+STRUCTURE → MANIFESTATION → OBSERVATION → DEEPER STRUCTURE.
+
+CONVERGENCE → COHERENT RELATIONSHIP → APPROPRIATE ACTION → OBSERVABLE CONSEQUENCE → VERIFICATION.
+
+Use what exists.
+Bridge only what is missing.
+Verify everything.`;
+
+ navigator
+  .clipboard
+  ?.writeText(protocol)
+  .catch(()=>{});
+
+ window.open(
+  'https://chatgpt.com/',
+  '_blank'
+ );
+
 }
-document.addEventListener('keydown',e=>{if(e.key==='Escape')closeIntent()})
+
+document.addEventListener(
+ 'keydown',
+ e=>{
+  if(e.key==='Escape'){
+   closeIntent();
+  }
+ }
+);
+
 </script>
+
 </body>
 </html>
