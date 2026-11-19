@@ -1,0 +1,15 @@
+{
+  "schemaVersion": 1,
+  "checkedAt": "2026-11-19",
+  "statusMeaning": "Planning statuses; prior reports are not current connection checks.",
+  "evidence": "https://github.com/segunayoade/malkuth-control-hub/issues/1",
+  "capabilities": [
+    {"id":"B01","system":"Raspberry Pi","purpose":"Operations bridge","actions":["authorised status"],"status":"proposed","trust":"unverified","scope":"phone.read is a separate existing grant","approval":"read-only consent; mutations separately gated"},
+    {"id":"B02","system":"Cloudflare","purpose":"Existing preview deployment adapter","actions":["prepare deployment"],"status":"proposed","trust":"unverified","scope":"existing account only","approval":"explicit deployment approval"},
+    {"id":"B03","system":"ntfy","purpose":"Notification adapter","actions":["send approved notification"],"status":"proposed","trust":"unverified","scope":"unknown","approval":"explicit message and provider approval"},
+    {"id":"B05","system":"Raspberry Pi","purpose":"Durable job runner","actions":["checkpoint","retry","cancel"],"status":"proposed","trust":"unverified","scope":"bounded per-action grant","approval":"owner approval per consequential action"},
+    {"id":"B06","system":"Malkuth","purpose":"Scoped control hub API","actions":["status","approval","evidence"],"status":"proposed","trust":"unverified","scope":"not established","approval":"separate implementation and deployment approval"},
+    {"id":"B07","system":"Termius","purpose":"Human-operated fallback","actions":["authorised diagnostics"],"status":"reported","trust":"historical evidence","scope":"existing user session","approval":"device access separately approved"},
+    {"id":"B08","system":"Bridge","purpose":"Health and evidence ledger","actions":["status","record evidence"],"status":"proposed","trust":"unverified","scope":"not established","approval":"owner approval for external writes"}
+  ]
+}
